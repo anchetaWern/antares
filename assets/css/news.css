@@ -1,0 +1,45 @@
+h1 {
+    color: #737373;
+}
+
+a {
+    text-decoration: initial;
+    color: #3DA1CD;
+}
+
+#news ul li {
+    padding: 15px 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper {
+    width: 900px;
+    margin: 0 auto;
+}
+
+#nav {
+    float: left;
+    width: 200px; 
+    margin-top: 10px;
+}
+
+ul li {
+    list-style: none;
+}
+
+#nav ul li {
+    padding: 5px 0;
+}
+
+#news {
+	float: left;
+	width: 600px;
+}
+
+.pagination {
+	display: none;
+}
