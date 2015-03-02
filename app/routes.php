@@ -21,7 +21,6 @@ App::before(function($request)
 
 Route::pattern('tag', '[a-z0-9]+');
 
-
 Route::match(array('GET', 'POST'), '/news/{tags}', function($tags){
 
     $offset = 0;
@@ -61,7 +60,7 @@ Route::match(array('GET', 'POST'), '/news/{tags}', function($tags){
     return $top_stories;
 });
 
-Route::get('/{tag}', 'HomeController@index');
+Route::get('/{tag?}', 'HomeController@index');
 
 Route::get('/hn/update', 'NewsUpdaterController@hackernews');
 
@@ -138,6 +137,10 @@ Route::get('/producthunt/update', 'NewsUpdaterController@producthunt');
 Route::get('/designernews/update', 'NewsUpdaterController@designernews');
 
 Route::get('/github/update', 'NewsUpdaterController@github');
+
+Route::get('/webops/update', 'NewsUpdaterController@weboperationsweekly');
+
+Route::get('/webperformancenews/update', 'NewsUpdaterController@webperformancenews');
 
 Route::get('/reset/{pass}', function($pass){
     //runs once a month

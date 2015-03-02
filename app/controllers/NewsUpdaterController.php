@@ -2088,4 +2088,122 @@ class NewsUpdaterController extends BaseController {
 	    return 'success';
 	}
 
+
+	public function weboperationsweekly(){
+		//every thursday
+
+		$date = date('Y-m-d');
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('http://webopsweekly.com/latest');
+
+	    $excluded_urls = array(
+	        'http://twitter.com/peterc',
+	        'https://cooperpress.com/',
+	        'https://cooperpress.com/mediakit2014q4.pdf',
+	        'https://cooperpress.com/jobs',
+	        'https://cooperpress.com/spam.html',
+	        'https://cooperpress.com/privacy.html'
+	    );
+
+	    $excluded_text = array(
+	        'Unsubscribe',
+	        'Change email address',
+	        'Read this e-mail on the Web',
+	        'Read this issue on the Web',
+	        'unsubscribe here',
+	        'media kit.',
+	        'Update your email address',
+	        'Stop getting WebOps Weekly',
+	        'Change your email address',
+	        'See our archives',
+	        'Read this on the Web'
+	    );
+
+	    foreach($html->find('.issue-html a') as $link){
+	        $text = trim($link->plaintext);
+	        $url = $link->href;
+
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && strpos($url, 'http://webopsweekly.com') === false){
+
+	            
+	            $time = date('Y-m-d H:i:s');
+
+	            $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	            if(empty($db_item)){
+	            	
+	                DB::table('news')->insert(array(
+	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'url' => $url,
+	                    'tags' => 'web-operations',
+	                    'timestamp' => $time,
+	                    'score' => 0,
+	                    'source' => 'weboperationsweekly'
+	                ));
+	                
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+	            //echo "<li>" .  $text . " - " . $url . "</li>";
+
+	        }
+	    }
+
+	    return 'success';
+
+
+	}
+
+
+	public function webperformancenews(){
+
+		//every saturday
+
+	    $client = new GuzzleHttp\Client();
+	    $response = $client->get('http://www.webperformancenews.com/feed.xml');
+
+	    $date = date('Y-m-d');
+
+	    $data = json_decode(json_encode($response->xml()), true);
+	    if(!empty($data['channel'])){
+	        foreach($data['channel']['item'] as $item){
+
+	            $time = date('Y-m-d H:i:s');
+
+	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
+	            $url = $item['link'];
+	            
+	            $db_item = DB::table('news')
+	                ->where('url', '=', $url)
+	                ->first();
+
+	            if(empty($db_item)){
+	            	
+	                DB::table('news')->insert(array(
+	                    'title' => $text,
+	                    'url' => $url,
+	                    'tags' => 'web-performance',
+	                    'timestamp' => $time,
+	                    'score' => 0,
+	                    'source' => 'webperformancenews'
+	                ));
+
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+
+	            //echo "<li>" .  $text . " - " . $url . "</li>";
+
+	        }
+	    }
+
+	    return 'success';
+
+
+	}
+
 }

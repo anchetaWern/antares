@@ -2,12 +2,38 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="author" content="Wern Ancheta">
+	<meta name="keywords" content="news,web-development,programming,design">
+	<meta name="description" content="Your developer news. All in one place.">
+
+       
+	<meta property="og:title" content="{{ Config::get('app.title') }}">
+	<meta property="og:type" content="website">
+	<meta property="og:image" content="{{ asset('assets/img/icon.png') }}">
+	<meta property="og:url" content="http://antaresapp.space">
+	<meta property="og:description" content="Your developer news. All in one place.">
+
+	    
+	<meta name="twitter:card" content="Your developer news. All in one place.">
+	<meta name="twitter:title" content="{{ Config::get('app.title') }}">
+	<meta name="twitter:description" content="Your developer news. All in one place.">
+	<meta name="twitter:image" content="{{ asset('assets/img/favicons/android-icon-72x72.png') }}">
+
 	<title>{{ Config::get('app.title') }}</title>
 	<link rel="stylesheet" href="{{ asset('assets/css/news.css') }}">
+
+	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/img/favicons/favicon-32x32.png') }}">
+	<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/img/favicon-96x96.png') }}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/img/favicon-16x16.png') }}">
+
+
 </head>
 <body>
 	<div id="wrapper">
-		<h1>{{ Config::get('app.title') }}</h1>
+		<header>
+			<h1>{{ Config::get('app.title') }}</h1>
+			<span class="sub-text">Your developer news. All in one place.</span>
+		</header>
 		<div id="nav">
 			<ul>
 				<li><a href="/hn">Hacker News</a></li>
