@@ -2,7 +2,11 @@
 
 class HomeController extends BaseController {
 
-	public function index($tag){
+	public function index($tag = null){
+
+		if(is_null($tag)){
+			$tag = 'hn';
+		}
 
 		$news = News::where('tags', '=', $tag)->paginate();
 		$page_data = array(
