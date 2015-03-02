@@ -1,5 +1,6 @@
 h1 {
     color: #737373;
+    margin-bottom: 0;
 }
 
 a {
@@ -42,4 +43,12 @@ ul li {
 
 .pagination {
 	display: none;
+}
+
+.sub-text {
+    color: #A1A1A1;
+}
+
+header {
+    margin-bottom: 20px;
 }
