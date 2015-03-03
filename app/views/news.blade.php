@@ -53,6 +53,8 @@
 				<li><a href="/design">Designers</a></li>
 				<li><a href="/gamedev">Game Developer</a></li>
 				<li><a href="/webdev">Web Development</a></li>
+				<li><a href="/web-operations">Web Operations</a></li>
+				<li><a href="/web-performance">Web Performance</a></li>
 				<li><a href="/tools">Tools</a></li>
 				<li><a href="/python">Python</a></li>
 				<li><a href="/go">Go</a></li>

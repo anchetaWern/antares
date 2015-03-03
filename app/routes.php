@@ -19,7 +19,7 @@ App::before(function($request)
     header('Access-Control-Allow-Credentials: true');
 });
 
-Route::pattern('tag', '[a-z0-9]+');
+Route::pattern('tag', '[a-z0-9-]+');
 
 Route::match(array('GET', 'POST'), '/news/{tags}', function($tags){
 
