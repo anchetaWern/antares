@@ -8,7 +8,9 @@ class HomeController extends BaseController {
 			$tag = 'hn';
 		}
 
-		$news = News::where('tags', '=', $tag)->paginate();
+		$news = News::where('tags', '=', $tag)
+			->orderBy('timestamp', 'DESC')
+			->paginate();
 		$page_data = array(
 			'news' => $news
 		);
