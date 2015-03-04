@@ -68,6 +68,8 @@
 		</div>
 
 		<div id="news">
+			<span class="small">Last updated: {{ $last_updated }} PHT</span>
+			<h2></h2>
 			<ul id="items">				
 			@foreach($news as $item)
 				<li class="item">

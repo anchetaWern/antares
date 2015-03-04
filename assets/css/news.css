@@ -3,6 +3,10 @@ h1 {
     margin-bottom: 0;
 }
 
+h2 {
+    color: #7C7C7C;
+}
+
 a {
     text-decoration: initial;
     color: #3DA1CD;
@@ -28,6 +32,10 @@ ul {
     margin-top: 10px;
 }
 
+#nav a.active {
+    font-weight: bold;
+}
+
 ul li {
     list-style: none;
 }
@@ -51,4 +59,10 @@ ul li {
 
 header {
     margin-bottom: 20px;
+}
+
+span.small {
+    float: right;
+    color: #A1A1A1;
+    font-size: 13px;
 }

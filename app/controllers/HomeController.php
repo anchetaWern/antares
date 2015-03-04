@@ -11,8 +11,16 @@ class HomeController extends BaseController {
 		$news = News::where('tags', '=', $tag)
 			->orderBy('timestamp', 'DESC')
 			->paginate();
+
+		$server_timezone = Config::get('app.timezone');
+
+		$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news[0]->timestamp, $server_timezone)
+			->setTimezone('Asia/Manila')
+			->format('M d g:i a');
+
 		$page_data = array(
-			'news' => $news
+			'news' => $news,
+			'last_updated' => $last_updated
 		);
 		return View::make('news', $page_data);
 	}
