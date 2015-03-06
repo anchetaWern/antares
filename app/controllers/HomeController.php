@@ -8,6 +8,10 @@ class HomeController extends BaseController {
 			$tag = 'hn';
 		}
 
+		if($tag == 'js'){
+			$tag = 'javascript';
+		}
+
 		$news = News::where('tags', '=', $tag)
 			->orderBy('timestamp', 'DESC')
 			->paginate();

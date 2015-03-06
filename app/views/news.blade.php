@@ -46,7 +46,7 @@
 				<li><a href="/php">PHP</a></li>
 				<li><a href="/html5">HTML5</a></li>
 				<li><a href="/css">CSS</a></li>
-				<li><a href="/javascript">JavaScript</a></li>
+				<li><a href="/js">JavaScript</a></li>
 				<li><a href="/ruby">Ruby</a></li>
 				<li><a href="/db">Database</a></li>
 				<li><a href="/programmer">Programmers</a></li>
