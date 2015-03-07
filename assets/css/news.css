@@ -66,3 +66,12 @@ span.small {
     color: #A1A1A1;
     font-size: 13px;
 }
+
+.actions {
+    margin-top: 10px;
+}
+
+.actions a {
+    color: #808080;
+    margin: 5px;
+}

@@ -21,6 +21,7 @@
 
 	<title>{{ Config::get('app.title') }}</title>
 	<link rel="stylesheet" href="{{ asset('assets/css/news.css') }}">
+	<link rel="stylesheet" href="{{ asset('assets/lib/font-awesome/css/font-awesome.min.css') }}">
 
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/img/favicons/favicon-32x32.png') }}">
 	<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/img/favicon-96x96.png') }}">
@@ -74,6 +75,12 @@
 			@foreach($news as $item)
 				<li class="item">
 					<a href="{{ $item->url }}" target="_blank">{{ $item->title }}</a>
+					<div class="actions">
+						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" target="_blank"><i class="fa fa-facebook"></i></a>
+						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" target="_blank"><i class="fa fa-twitter"></i></a>
+						<a href="https://plus.google.com/share?url={{ $item->url }}" target="_blank"><i class="fa fa-google-plus"></i></a>
+						<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" target="_blank"><i class="fa fa-linkedin"></i></a>
+					</div>
 				</li>
 			@endforeach
 			{{ $news->links() }}
