@@ -80,6 +80,7 @@
 						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" target="_blank"><i class="fa fa-twitter"></i></a>
 						<a href="https://plus.google.com/share?url={{ $item->url }}" target="_blank"><i class="fa fa-google-plus"></i></a>
 						<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" target="_blank"><i class="fa fa-linkedin"></i></a>
+						<a href="https://getpocket.com/save?url={{ $item->url }}" target="_blank">Save to Pocket</a>
 					</div>
 				</li>
 			@endforeach
