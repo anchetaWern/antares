@@ -74,8 +74,8 @@
 			<ul id="items">				
 			@foreach($news as $item)
 				<li class="item">
-					<a href="{{ $item->url }}" target="_blank">{{ $item->title }}</a>
-					<div class="actions">
+					<a href="{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
+					<div class="actions hidden">
 						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" target="_blank"><i class="fa fa-facebook"></i></a>
 						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" target="_blank"><i class="fa fa-twitter"></i></a>
 						<a href="https://plus.google.com/share?url={{ $item->url }}" target="_blank"><i class="fa fa-google-plus"></i></a>

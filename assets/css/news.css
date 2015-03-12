@@ -67,6 +67,10 @@ span.small {
     font-size: 13px;
 }
 
+.hidden {
+    display: none;
+}
+
 .actions {
     margin-top: 10px;
 }

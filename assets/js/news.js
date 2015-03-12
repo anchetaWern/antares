@@ -22,4 +22,8 @@
 
 	var current_source = $('a[href="' + path + '"]').text();
 	$('h2').text(current_source);
+
+	$('#items').on('click', '.item-link', function(){
+		$(this).siblings('.actions').removeClass('hidden');
+	});
 })();
