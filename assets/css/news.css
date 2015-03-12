@@ -71,6 +71,10 @@ span.small {
     display: none;
 }
 
+a.item-link:visited {
+    color: #C04B9B;
+}
+
 .actions {
     margin-top: 10px;
 }
