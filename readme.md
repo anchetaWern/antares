@@ -8,5 +8,6 @@ news app for developers
 
 ###TODO
 
-- Improve UI
-- Add ability to schedule links via [Ahead](https://github.com/anchetaWern/ahead)
+- mobile view
+- add timestamp on top of most recent article for a specific date
+- add feature for showing only news for a specific date
