@@ -26,4 +26,9 @@
 	$('#items').on('click', '.item-link', function(){
 		$(this).siblings('.actions').removeClass('hidden');
 	});
+
+	$('#news_sources').change(function(){
+		var value = $(this).val();
+		window.location.href = value;
+	});
 })();

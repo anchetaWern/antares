@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="Wern Ancheta">
 	<meta name="keywords" content="news,web-development,programming,design">
 	<meta name="description" content="Your developer news. All in one place.">
@@ -36,41 +38,24 @@
 			<span class="sub-text">Your developer news. All in one place.</span>
 		</header>
 		<div id="nav">
-			<ul>
-				<li><a href="/hn">Hacker News</a></li>
-				<li><a href="/producthunt">Product Hunt</a></li>
-				<li><a href="/github">Github</a></li>
-				<li><a href="/medium">Medium</a></li>
-				<li><a href="/dn">Designer News</a></li>
-				<li><a href="/readability">Readability Top Reads</a></li>
-				<li><a href="/slashdot">Slashdot</a></li>
-				<li><a href="/php">PHP</a></li>
-				<li><a href="/html5">HTML5</a></li>
-				<li><a href="/css">CSS</a></li>
-				<li><a href="/js">JavaScript</a></li>
-				<li><a href="/ruby">Ruby</a></li>
-				<li><a href="/db">Database</a></li>
-				<li><a href="/programmer">Programmers</a></li>
-				<li><a href="/design">Designers</a></li>
-				<li><a href="/gamedev">Game Developer</a></li>
-				<li><a href="/webdev">Web Development</a></li>
-				<li><a href="/web-operations">Web Operations</a></li>
-				<li><a href="/web-performance">Web Performance</a></li>
-				<li><a href="/tools">Tools</a></li>
-				<li><a href="/python">Python</a></li>
-				<li><a href="/go">Go</a></li>
-				<li><a href="/ios">IOS</a></li>
-				<li><a href="/android">Android</a></li>
-				<li><a href="/perl">Perl</a></li>
-				<li><a href="/devops">DevOps</a></li>
-				<li><a href="/wordpress">Wordpress</a></li>
-				<li><a href="/nondev">Non-developer</a></li>
+			<ul>	
+				@foreach($news_sources as $url => $news_source)
+				<li><a href="{{ $url }}">{{ $news_source }}</a></li>
+				@endforeach
 			</ul>
 		</div>
 
+		<div id="mobile-nav">
+			<select name="news_sources" id="news_sources">
+				@foreach($news_sources as $url => $news_source)
+				<option value="{{ $url }}" {{ FormHelper::isSelected($url, $tag) }}>{{ $news_source }}</option>
+				@endforeach
+			</select>
+		</div>
+
 		<div id="news">
-			<span class="small">Last updated: {{ $last_updated }} PHT</span>
 			<h2></h2>
+			<div class="small">Last updated: {{ $last_updated }} PHT</div>
 			<ul id="items">				
 			@foreach($news as $item)
 				<li class="item">
