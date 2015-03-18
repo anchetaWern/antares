@@ -1830,7 +1830,7 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('h3.block-title a') as $link){
 	        
 	        $text = trim($link->plaintext);
-	        $url = 'https://medium.com' . $link->href;     
+	        $url = $link->href;     
 	       
 	        if(!empty($text) && !empty($url)){
 
@@ -1851,6 +1851,7 @@ class NewsUpdaterController extends BaseController {
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
+	            
 	            
 	            //echo "<li>" .  $text . " - " . $url . "</li>";
 	            
