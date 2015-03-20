@@ -2,17 +2,17 @@
 
 class HomeController extends BaseController {
 
-	public function index($tag = null){
+	public function index($category = null){
 
-		if(is_null($tag)){
-			$tag = 'hn';
+		if(is_null($category)){
+			$category = 'hn';
 		}
 
-		if($tag == 'js'){
-			$tag = 'javascript';
+		if($category == 'js'){
+			$category = 'javascript';
 		}
 
-		$news = News::where('tags', '=', $tag)
+		$news = News::where('category', '=', $category)
 			->orderBy('timestamp', 'DESC')
 			->paginate();
 
@@ -54,7 +54,7 @@ class HomeController extends BaseController {
 		);
 
 		$page_data = array(
-			'tag' => '/' . $tag,
+			'category' => '/' . $category,
 			'news_sources' => $news_sources,
 			'news' => $news,
 			'last_updated' => $last_updated

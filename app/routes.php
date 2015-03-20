@@ -120,15 +120,15 @@ Route::get('/devopsweekly/update', 'NewsUpdaterController@devopsweekly');
 
 Route::get('/golangweekly/update', 'NewsUpdaterController@golangweekly');
 
-Route::get('/iosdevweekly/update', 'NewsUpdaterController@iosdevweekly');
+Route::get('/iosdevweekly/update', 'NewsUpdaterController@iosdevweekly'); 
 
-Route::get('/sidebario/update', 'NewsUpdaterController@sidebario');
+Route::get('/sidebario/update', 'NewsUpdaterController@sidebario'); 
 
 Route::get('/androidweekly/update', 'NewsUpdaterController@androidweekly');
 
 Route::get('/medium/update', 'NewsUpdaterController@medium');
 
-Route::get('/readability/update', 'NewsUpdaterController@readability');
+Route::get('/readability/update', 'NewsUpdaterController@readability'); 
 
 Route::get('/slashdot/update', 'NewsUpdaterController@slashdot');
 

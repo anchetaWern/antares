@@ -48,7 +48,7 @@
 		<div id="mobile-nav">
 			<select name="news_sources" id="news_sources">
 				@foreach($news_sources as $url => $news_source)
-				<option value="{{ $url }}" {{ FormHelper::isSelected($url, $tag) }}>{{ $news_source }}</option>
+				<option value="{{ $url }}" {{ FormHelper::isSelected($url, $category) }}>{{ $news_source }}</option>
 				@endforeach
 			</select>
 		</div>
@@ -59,7 +59,7 @@
 			<ul id="items">				
 			@foreach($news as $item)
 				<li class="item">
-					<a href="{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
+					<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
 					<div class="actions hidden">
 						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" target="_blank"><i class="fa fa-facebook"></i></a>
 						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" target="_blank"><i class="fa fa-twitter"></i></a>

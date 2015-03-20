@@ -19,27 +19,36 @@ class NewsUpdaterController extends BaseController {
 	        $text = html_entity_decode($item_data['title'], ENT_QUOTES);
 
 	        $url = $item_data['url'];
-	        $time = date('Y-m-d H:i:s', $item_data['time']);
-	    
-	        
-	        $db_item = DB::table('news')
-	            ->where('url', '=', $url)
-	            ->first();
+			$url_parts = parse_url($url);
+			if(!empty($url_parts['path'])){
 
-	        if(empty($db_item)){
+				
+				$url = $url_parts['host'] . $url_parts['path'];
 
-	            DB::table('news')->insert(array(
-	                'title' => $text,
-	                'url' => $url,
-	                'tags' => 'hn',
-	                'timestamp' => $time,
-	                'source' => 'hn'
-	            ));
-	        }else{
-	            DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	        }
-	        
-	        //echo "<li>" . $text . " - " . $url . "</li>";
+		        $time = date('Y-m-d H:i:s', $item_data['time']);
+		    
+		        
+		        $db_item = DB::table('news')
+		            ->where('url', '=', $url)
+		            ->first();
+
+		        if(empty($db_item)){
+
+		            DB::table('news')->insert(array(
+		                'title' => $text,
+		                'url' => $url,
+		                'category' => 'hn',
+		                'timestamp' => $time,
+		                'curator' => 'hackernews',
+		                'source' => $url_parts['host']
+		            ));
+		        }else{
+		            DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		        }
+		        
+		        echo "<li>" . $text . " - " . $url . "</li>";
+			}
+
 
 	    }
 
@@ -62,27 +71,33 @@ class NewsUpdaterController extends BaseController {
 	            $time = date('Y-m-d H:i:s');
 
 	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
+	            
 	            $url = $item['guid'];
-	            
-	            $db_item = DB::table('news')
-	                ->where('url', '=', $url)
-	                ->first();
+				$url_parts = parse_url($url);
+				
+				if(!empty($url_parts['path'])){				
+					$url = $url_parts['host'] . $url_parts['path'];
 
-	            if(empty($db_item)){
-	                DB::table('news')->insert(array(
-	                    'title' => $text,
-	                    'url' => $url,
-	                    'tags' => 'javascript',
-	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'echojs'
-	                ));
-	            }else{
-	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	            }
-	            
+		            $db_item = DB::table('news')
+		                ->where('url', '=', $url)
+		                ->first();
 
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+		            if(empty($db_item)){
+		                DB::table('news')->insert(array(
+		                    'title' => $text,
+		                    'url' => $url,
+		                    'category' => 'javascript',
+		                    'timestamp' => $time,
+		                    'curator' => 'echojs',
+		                    'source' => $url_parts['host']
+		                ));
+		            }else{
+		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		            }
+		            
+
+		            echo "<li>" .  $text . " - " . $url . "</li>";
+				}
 
 	        }
 	    }
@@ -115,31 +130,39 @@ class NewsUpdaterController extends BaseController {
 	        foreach($html->find('.newsletter_section a') as $link){
 
 	            $url = $link->href;
-	            $text = trim($link->plaintext);
-	            if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls)){
-	                
-	                $time = date('Y-m-d H:i:s');
-	                
+                $url_parts = parse_url($url);
 
-	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+                if(!empty($url_parts['path'])){
 
-	                if(empty($db_item)){
-	                    DB::table('news')->insert(array(
-	                        'title' => html_entity_decode($text, ENT_QUOTES),
-	                        'url' => $url,
-	                        'tags' => 'nondev',
-	                        'timestamp' => $time,
-	                        'score' => 0,
-	                        'source' => 'nextdraft'
-	                    ));
-	                }else{
-	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	                }
-	                
-	                //echo "<li>" .  $text . " - " . $url . "</li>";
+	                $url = $url_parts['host'] . $url_parts['path'];
+
+		            $text = trim($link->plaintext);
+		            if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls)){
+		                
+		                $time = date('Y-m-d H:i:s');
+		                
+
+		                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+		                if(empty($db_item)){
+		                    DB::table('news')->insert(array(
+		                        'title' => html_entity_decode($text, ENT_QUOTES),
+		                        'url' => $url,
+		                        'category' => 'nondev',
+		                        'timestamp' => $time,
+		                        'curator' => 'nextdraft',
+		                        'source' => $url_parts['host']
+		                    ));
+		                }else{
+		                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		                }
+		                
+		                
+		                echo "<li>" .  $text . " - " . $url . "</li>";
 
 
-	            }
+		            }
+                }
 	        }
 	    }
 
@@ -158,14 +181,16 @@ class NewsUpdaterController extends BaseController {
 
 	    if(!empty($latest_url)){
 	        $excluded_urls = array(
-	            'http://sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jl/',
-	            'http://sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jr/',
-	            'http://sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jj/',
-	            'http://sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jj/',
-	            'http://sitepointdotcom.createsend.com/functionalityDisabled.html',
-	            'http://sitepoint-versioning.createsend1.com/t/y-tw-idyhkjy-l-jd/',
-	            'http://sitepoint-versioning.forwardtomyfriend.com/y-l-2AD73FFF-idyhkjy-l-jh',
-	            'http://sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jy/'
+	            'sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jl/',
+	            'sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jr/',
+	            'sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jj/',
+	            'sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jj/',
+	            'sitepointdotcom.createsend.com/functionalityDisabled.html',
+	            'sitepoint-versioning.createsend1.com/t/y-tw-idyhkjy-l-jd/',
+	            'sitepoint-versioning.forwardtomyfriend.com/y-l-2AD73FFF-idyhkjy-l-jh',
+	            'sitepoint-versioning.createsend1.com/t/y-l-idyhkjy-l-jy/',
+	            'sitepoint-versioning.createsend1.com/t/y-l-ikirdtl-l-r/',
+	            'sitepoint-versioning.createsend1.com/t/y-l-ikirdtl-l-y/'
 	        );
 
 	        $excluded_text = array(
@@ -174,7 +199,9 @@ class NewsUpdaterController extends BaseController {
 	            'Google+',
 	            'the archive',
 	            'Tweet',
-	            'Forward'
+	            'Forward',
+	            'this page',
+	            'this tweet'
 	        );
 
 	        $date = date('Y-m-d');
@@ -183,9 +210,12 @@ class NewsUpdaterController extends BaseController {
 
 	        foreach($html->find('a') as $link){
 	            $text = trim($link->plaintext);
-	            $url = $link->href;
+	            $url = Url::getRedirect($link->href);
+				$url_parts = parse_url($url);
 
-	            if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
+				$url = $url_parts['host'] . $url_parts['path'];
+
+	            if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
 
 	                
 	                $time = date('Y-m-d H:i:s');
@@ -196,16 +226,17 @@ class NewsUpdaterController extends BaseController {
 	                    DB::table('news')->insert(array(
 	                        'title' => html_entity_decode($text, ENT_QUOTES),
 	                        'url' => $url,
-	                        'tags' => 'webdev',
+	                        'category' => 'webdev',
 	                        'timestamp' => $time,
-	                        'score' => 0,
-	                        'source' => 'versioning'
+	                        'curator' => 'versioning',
+	                        'source' => $url_parts['host']
 	                    ));
 	                }else{
 	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	                }
 	                
-	                //echo "<li>" .  $text . " - " . $url . "</li>";
+	                
+	                echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	            }
@@ -248,10 +279,11 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
-
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+				
+				$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -260,16 +292,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'html5',
+	                    'category' => 'html5',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'html5weekly'
+	                    'curator' => 'html5weekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	        }
@@ -309,10 +341,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
 
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -321,16 +356,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'javascript',
+	                    'category' => 'javascript',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'jsweekly'
+	                    'curator' => 'jsweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	        }
@@ -371,10 +406,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -383,16 +420,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'ruby',
+	                    'category' => 'ruby',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'rubyweekly'
+	                    'curator' => 'rubyweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 
@@ -437,10 +474,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -449,16 +488,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'db',
+	                    'category' => 'db',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'dbweekly'
+	                    'curator' => 'dbweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	        }
@@ -505,10 +544,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
 
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -517,16 +559,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'db',
+	                    'category' => 'db',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'postgresweekly'
+	                    'curator' => 'postgresweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -566,10 +608,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -578,16 +622,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'programmer',
+	                    'category' => 'programmer',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'statuscode'
+	                    'curator' => 'statuscode',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -627,10 +671,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
 
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -639,16 +686,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'javascript',
+	                    'category' => 'javascript',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'nodeweekly'
+	                    'curator' => 'nodeweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -690,10 +737,13 @@ class NewsUpdaterController extends BaseController {
 
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
 
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -702,16 +752,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'php',
+	                    'category' => 'php',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'phpweekly'
+	                    'curator' => 'phpweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 
@@ -752,10 +802,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.templateContainer a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls)){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -764,16 +816,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'css',
+	                    'category' => 'css',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'rdweekly'
+	                    'curator' => 'rdweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 
@@ -807,11 +859,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('#contentTable a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text)){
-
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -820,16 +873,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'db',
+	                    'category' => 'db',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'nosqlweekly'
+	                    'curator' => 'nosqlweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 
@@ -863,10 +916,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('#contentTable a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text)){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 	        
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
 	                                    
@@ -875,16 +930,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'python',
+	                    'category' => 'python',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'pythonweekly'
+	                    'curator' => 'pythonweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 
@@ -921,10 +976,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('#templateContainer a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text)){
+
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 	            
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -934,16 +992,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'tools',
+	                    'category' => 'tools',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'webtoolsweekly'
+	                    'curator' => 'webtoolsweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 
@@ -982,11 +1040,14 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.archive__issue a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !in_array($text, $excluded_text)){
+
+	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 
 	            
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -997,16 +1058,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'webdev',
+	                    'category' => 'webdev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'wdrl'
+	                    'curator' => 'wdrl',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	        }
@@ -1037,12 +1098,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.entry-content a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls)){
 
-	        
+	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();       
@@ -1051,16 +1113,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'webdev',
+	                    'category' => 'webdev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'wdweekly'
+	                    'curator' => 'wdweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 
@@ -1106,10 +1168,13 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text)){
 
-	            
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1118,16 +1183,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'webdev',
+	                    'category' => 'webdev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'mobilewebweekly'
+	                    'curator' => 'mobilewebweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	           
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -1149,10 +1214,13 @@ class NewsUpdaterController extends BaseController {
 
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($text) && !empty($url)){
 
-	            
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();       
@@ -1161,16 +1229,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'webdev',
+	                    'category' => 'webdev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'heydesigner'
+	                    'curator' => 'heydesigner',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 
 	        }
@@ -1197,10 +1265,13 @@ class NewsUpdaterController extends BaseController {
 
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($text) && !empty($url)){
 
-	           
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+
+	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();       
@@ -1209,16 +1280,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'css',
+	                    'category' => 'css',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'cssweekly'
+	                    'curator' => 'cssweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	        
@@ -1251,9 +1322,13 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
+			$url_parts = parse_url($url);
+			
 
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text)){
-	           
+
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	           	
+	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1262,16 +1337,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'gamedev',
+	                    'category' => 'gamedev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'gamedevjsweekly'
+	                    'curator' => 'gamedevjsweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }            
 	           
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -1297,11 +1372,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url)){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
 
-	           
+	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1310,16 +1386,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'javascript',
+	                    'category' => 'javascript',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'emberweekly'
+	                    'curator' => 'emberweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }     
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	        }
 	       
 	    }
@@ -1345,11 +1421,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url)){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1358,16 +1435,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'wordpress',
+	                    'category' => 'wordpress',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'wpmail.me'
+	                    'curator' => 'wpmail.me',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }  
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	        }
 	       
 	    }
@@ -1405,10 +1482,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($url, $excluded_urls)){
+	        if(!empty($text) && !empty($url) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1417,16 +1496,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'webdev',
+	                    'category' => 'webdev',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'beyonddesktop'
+	                    'curator' => 'beyonddesktop',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }            
 	          
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	       
@@ -1465,10 +1544,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text)){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	         
@@ -1478,16 +1559,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'python',
+	                    'category' => 'python',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'pycoders'
+	                    'curator' => 'pycoders',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";	           
+	            echo "<li>" .  $text . " - " . $url . "</li>";	           
 	        }
 	       
 	    }
@@ -1518,12 +1599,15 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
+			$url_parts = parse_url($url);
+			
+
 	        $style = str_replace(' ', '', $link->style);
 
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text)){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 	            if($style == 'font-size:18px;font-weight:bold;'){
 	                
@@ -1533,16 +1617,16 @@ class NewsUpdaterController extends BaseController {
 	                    DB::table('news')->insert(array(
 	                        'title' => html_entity_decode($text, ENT_QUOTES),
 	                        'url' => $url,
-	                        'tags' => 'perl',
+	                        'category' => 'perl',
 	                        'timestamp' => $time,
-	                        'score' => 0,
-	                        'source' => 'perlweekly'
+	                        'curator' => 'perlweekly',
+	                        'source' => $url_parts['host']
 	                    ));
 	                }else{
 	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	                } 
 	                
-	                //echo "<li>" .  $text . " - " . $url . "</li>";
+	                echo "<li>" .  $text . " - " . $url . "</li>";
 	            }
 
 	        }
@@ -1580,29 +1664,30 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls)){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
 
 	            $time = date('Y-m-d H:i:s');
 
-	           
+	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
 
 	            if(empty($db_item)){
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'devops',
+	                    'category' => 'devops',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'devopsweekly'
+	                    'curator' => 'devopsweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	       
@@ -1645,10 +1730,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text)){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 
+	        	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            
@@ -1658,16 +1745,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'go',
+	                    'category' => 'go',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'golangweekly'
+	                    'curator' => 'golangweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	       
@@ -1687,13 +1774,15 @@ class NewsUpdaterController extends BaseController {
 
 	    $html->load_file($base_url);
 
-	    foreach($html->find('.content h2 a') as $link){
+	    foreach($html->find('h3.item__title a') as $link){
 	        
 	        $text = trim($link->plaintext);
-	        $url = $link->href;     
-	       
-	        if(!empty($text) && !empty($url)){
+	        $url = Url::getRedirect($link->href);     
+			$url_parts = parse_url($url);
+	
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
 
+	            $url = $url_parts['host'] . $url_parts['path'];	  
 	            
 	            $time = date('Y-m-d H:i:s');
 
@@ -1703,17 +1792,19 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'ios',
+	                    'category' => 'ios',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'iosdevweekly'
+	                    'curator' => 'iosdevweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
+	           
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>"; 
+	            echo "<li>" .  $text . " - " . $url . "</li>"; 
 	        }
+	        
 	       
 	    }
 
@@ -1736,32 +1827,48 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = $item['title'];
 	        $url = $item['link'];
+			$url_parts = parse_url($url);
+			
 	        $datetime = date('Y-m-d H:i:s', strtotime($item['pubDate']));
 	       
 	     
-	        if(!empty($text) && !empty($url)){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['query'])){
 
-	           
-	            $time = date('Y-m-d H:i:s');
+	           	$url = str_replace('url=', '', $url_parts['query']);
+	           	$url = urldecode($url);
+	           	
+	           	$url_parts = parse_url($url);
 
-	            $db_item = DB::table('news')->where('url', '=', $url)->first();
+	           	if(!empty($url_parts['path'])){
 
-	            if(empty($db_item)){
-	                DB::table('news')->insert(array(
-	                    'title' => html_entity_decode($text, ENT_QUOTES),
-	                    'url' => $url,
-	                    'tags' => 'design',
-	                    'timestamp' => $datetime,
-	                    'score' => 0,
-	                    'source' => 'sidebario'
-	                ));
-	            }else{
-	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	            } 
-	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	           		$url = $url_parts['host'] . $url_parts['path'];
+		            
+		            $time = date('Y-m-d H:i:s');
+		            
+		            $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+		            if(empty($db_item)){
+		                DB::table('news')->insert(array(
+		                    'title' => html_entity_decode($text, ENT_QUOTES),
+		                    'url' => $url,
+		                    'category' => 'design',
+		                    'timestamp' => $datetime,
+		                    'curator' => 'sidebario',
+		                    'source' => $url_parts['host']
+		                ));
+		            }else{
+		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		            } 
+		            
+		            
+		            
+		            echo "<li>" .  $text . " - " . $url . "</li>";
+	           	}
+	           	
+	           	
 	           
 	        }
+	        
 
 	       
 	    }
@@ -1787,10 +1894,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text)){
+			$url_parts = parse_url($url);
+			
 
-	            
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1799,16 +1908,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'android',
+	                    'category' => 'android',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'androidweekly'
+	                    'curator' => 'androidweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	       
 	        }
 	       
@@ -1831,10 +1940,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-	       
-	        if(!empty($text) && !empty($url)){
+			$url_parts = parse_url($url);
+			
 
-	            
+	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1843,17 +1954,17 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'medium',
+	                    'category' => 'medium',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'medium'
+	                    'curator' => 'medium',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	            
 	        }
 	       
@@ -1877,34 +1988,46 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = $link->href;     
-	       
-	        if(!empty($text) && !empty($url)){
+			$url_parts = parse_url($url);
+			
+			
+	        if(!empty($text) && !empty($url) && !empty($url_parts['query'])){
 	            
+	            $url = str_replace('url=', '', $url_parts['query']);
 	            $time = date('Y-m-d H:i:s');
 
-	            $db_item = DB::table('news')->where('url', '=', $url)->first();
+	            $url_parts = parse_url($url);
+	            $url = $url_parts['host'] . $url_parts['path'];
 
-	            if(empty($db_item)){
-	                DB::table('news')->insert(array(
-	                    'title' => html_entity_decode($text, ENT_QUOTES),
-	                    'url' => $url,
-	                    'tags' => 'readability',
-	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'readability'
-	                ));
-	            }else{
-	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	            } 
-	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            if(!empty($url_parts['path'])){
+		            
+		            $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+		            if(empty($db_item)){
+		                DB::table('news')->insert(array(
+		                    'title' => html_entity_decode($text, ENT_QUOTES),
+		                    'url' => $url,
+		                    'category' => 'readability',
+		                    'timestamp' => $time,
+		                    'curator' => 'readability',
+		                    'source' => $url_parts['host']
+		                ));
+		            }else{
+		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		            } 
+		            
+		            
+		            echo "<li>" .  $text . " - " . $url . "</li>";
+	            }
 	           
 	        }
+	        
 	       
 	    }
 
 	    return 'success';
 	}
+
 
 
 	public function slashdot(){
@@ -1925,10 +2048,14 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('span[id^=title] a') as $link){
 	        
 	        $url = str_replace('//slashdot.org', 'http://slashdot.org', $link->href);
+			$url_parts = parse_url($url);
+			
+
 	        $text = trim($link->plaintext);
 	        
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text)){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1937,16 +2064,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'slashdot',
+	                    'category' => 'slashdot',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'slashdot'
+	                    'curator' => 'slashdot',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	        }
 	  
 	    }
@@ -1969,9 +2096,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->plaintext);
 	        $url = 'http://www.producthunt.com' . $link->href; 
-	        
-	        if(!empty($url) && !empty($text)){
+			$url_parts = parse_url($url);
+			
+
+	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];	 
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -1980,16 +2110,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'producthunt',
+	                    'category' => 'producthunt',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'producthunt'
+	                    'curator' => 'producthunt',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	            
 	        }
 	        
@@ -2014,9 +2144,12 @@ class NewsUpdaterController extends BaseController {
 	        
 	        $text = trim($link->story_title);
 	        $url = $link->href; 
-	        
-	        if(!empty($url) && !empty($text)){
+			$url_parts = parse_url($url);
+			
+
+	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -2025,16 +2158,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'dn',
+	                    'category' => 'dn',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'designernews'
+	                    'curator' => 'designernews',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	        }
 	        
 	  
@@ -2060,10 +2193,12 @@ class NewsUpdaterController extends BaseController {
 	        $exploded_url = explode('/', $url);
 	        $text = $exploded_url[2];
 	        $url = 'https://github.com' . $url;
-
+			$url_parts = parse_url($url);
+			
 	       
-	        if(!empty($url) && !empty($text)){
+	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
 	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -2072,16 +2207,16 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'github',
+	                    'category' => 'github',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'github'
+	                    'curator' => 'github',
+	                    'source' => $url_parts['host']
 	                ));
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 	        }
 	       
 	    }
@@ -2125,10 +2260,12 @@ class NewsUpdaterController extends BaseController {
 	    foreach($html->find('.issue-html a') as $link){
 	        $text = trim($link->plaintext);
 	        $url = $link->href;
+			$url_parts = parse_url($url);
+			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && strpos($url, 'http://webopsweekly.com') === false){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && strpos($url, 'http://webopsweekly.com') === false && !empty($url_parts['path'])){
 
-	            
+	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
 
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
@@ -2138,17 +2275,17 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'tags' => 'web-operations',
+	                    'category' => 'web-operations',
 	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'weboperationsweekly'
+	                    'curator' => 'weboperationsweekly',
+	                    'source' => $url_parts['host']
 	                ));
 	                
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
@@ -2176,6 +2313,8 @@ class NewsUpdaterController extends BaseController {
 
 	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
 	            $url = $item['link'];
+				$url_parts = parse_url($url);
+				
 	            
 	            $db_item = DB::table('news')
 	                ->where('url', '=', $url)
@@ -2183,21 +2322,25 @@ class NewsUpdaterController extends BaseController {
 
 	            if(empty($db_item)){
 	            	
-	                DB::table('news')->insert(array(
-	                    'title' => $text,
-	                    'url' => $url,
-	                    'tags' => 'web-performance',
-	                    'timestamp' => $time,
-	                    'score' => 0,
-	                    'source' => 'webperformancenews'
-	                ));
+	            	if(!empty($url_parts['path'])){
+	            		$url = $url_parts['host'] . $url_parts['path'];	 
+	            		
+		                DB::table('news')->insert(array(
+		                    'title' => $text,
+		                    'url' => $url,
+		                    'category' => 'web-performance',
+		                    'timestamp' => $time,
+		                    'curator' => 'webperformancenews',
+		                    'source' => $url_parts['host']
+		                ));
+	            	}
 
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            }
 	            
 
-	            //echo "<li>" .  $text . " - " . $url . "</li>";
+	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
 	    }
