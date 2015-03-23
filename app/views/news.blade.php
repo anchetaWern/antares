@@ -60,13 +60,13 @@
 			@foreach($news as $item)
 				<li class="item">
 					<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
-					<div class="actions hidden">
-						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" target="_blank"><i class="fa fa-facebook"></i></a>
-						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" target="_blank"><i class="fa fa-twitter"></i></a>
-						<a href="https://plus.google.com/share?url={{ $item->url }}" target="_blank"><i class="fa fa-google-plus"></i></a>
-						<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" target="_blank"><i class="fa fa-linkedin"></i></a>
-						<a href="https://getpocket.com/save?url={{ $item->url }}" target="_blank">Save to Pocket</a>
-						<a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/post/create?content={{ $item->title }} {{ $item->url }}" target="_blank">Schedule with Ahead</a>
+					<div class="actions">
+						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-facebook"></i></a>
+						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-twitter"></i></a>
+						<a href="https://plus.google.com/share?url={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-google-plus"></i></a>
+						<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-linkedin"></i></a>
+						<a href="https://getpocket.com/save?url={{ $item->url }}" class="hidden" target="_blank">Pocket</a>
+						<a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/post/create?content={{ $item->title }} {{ $item->url }}" class="hidden" target="_blank">Ahead</a>
 					</div>
 				</li>
 			@endforeach

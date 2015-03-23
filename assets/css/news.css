@@ -89,7 +89,7 @@ header {
 }
 
 .hidden {
-    opacity: 0;
+    display: none;
 }
 
 a.item-link:visited {
@@ -97,6 +97,7 @@ a.item-link:visited {
 }
 
 .actions {
+    height: 17px;
     margin-top: 20px;
     margin-bottom: 10px;
 }
@@ -173,7 +174,7 @@ a.item-link:visited {
 
     #items .actions a {
         font-size: 12px;
-        margin-right: 0;
+        margin-right: 5px;
     }
 
 

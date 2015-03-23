@@ -24,7 +24,7 @@
 	$('h2').text(current_source);
 
 	$('#items').on('click', '.item-link', function(){
-		$(this).siblings('.actions').removeClass('hidden');
+		$(this).siblings('.actions').children('a').removeClass('hidden');
 	});
 
 	$('#news_sources').change(function(){
