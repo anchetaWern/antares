@@ -133,6 +133,11 @@ a.item-link:visited {
     }
     
     header {
+        position: fixed;
+        top: 0;
+        background: #FFF;
+        width: 100%;
+        border-bottom: 1px solid #ccc;
         padding: 0 20px;
     }
 
@@ -157,6 +162,7 @@ a.item-link:visited {
         width: auto;
         float: none;
         padding: 0 20px;
+        margin-top: 160px;
     }
 
     #news ul li {

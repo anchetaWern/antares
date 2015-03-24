@@ -36,6 +36,13 @@
 		<header>
 			<h1>{{ Config::get('app.title') }}</h1>
 			<span class="sub-text">Your developer news. All in one place.</span>
+			<div id="mobile-nav">
+				<select name="news_sources" id="news_sources">
+					@foreach($news_sources as $url => $news_source)
+					<option value="{{ $url }}" {{ FormHelper::isSelected($url, $category) }}>{{ $news_source }}</option>
+					@endforeach
+				</select>
+			</div>
 		</header>
 		<div id="nav">
 			<ul>	
@@ -45,13 +52,6 @@
 			</ul>
 		</div>
 
-		<div id="mobile-nav">
-			<select name="news_sources" id="news_sources">
-				@foreach($news_sources as $url => $news_source)
-				<option value="{{ $url }}" {{ FormHelper::isSelected($url, $category) }}>{{ $news_source }}</option>
-				@endforeach
-			</select>
-		</div>
 
 		<div id="news">
 			<h2></h2>
