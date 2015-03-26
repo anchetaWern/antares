@@ -186,3 +186,10 @@ a.item-link:visited {
 
 
 }
+
+.date {
+    font-size: 12px;
+    color: #6B43CF;
+    text-align: right;
+    text-decoration: underline;
+}

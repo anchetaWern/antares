@@ -57,8 +57,9 @@
 			<h2></h2>
 			<div class="small">Last updated: {{ $last_updated }} PHT</div>
 			<ul id="items">				
-			@foreach($news as $item)
+			@foreach($news as $key => $item)
 				<li class="item">
+					<div class="date {{ ToggleHelper::showWhenCurrentDateIsNotEqualtoPrevious($key, $news) }}">{{ Carbon::createFromFormat('Y-m-d H:i:s', $item->timestamp)->format('M d') }}</div>
 					<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
 					<div class="actions">
 						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-facebook"></i></a>
