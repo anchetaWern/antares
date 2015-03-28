@@ -56,6 +56,14 @@
 		<div id="news">
 			<h2></h2>
 			<div class="small">Last updated: {{ $last_updated }} PHT</div>
+			<div class="clear"></div>
+			<div class="filter">
+				<form method="GET">				
+					<label for="filter">Date Filter</label>
+					<input type="text" id="filter" name="filter" placeholder="Eg. 2 days ago">
+					<button type="submit">Filter</button>
+				</form>
+			</div>
 			<ul id="items">				
 			@foreach($news as $key => $item)
 				<li class="item">
@@ -71,7 +79,7 @@
 					</div>
 				</li>
 			@endforeach
-			{{ $news->links() }}
+			{{ $news->appends(array('filter' => $filter))->links() }}
 			</ul>
 		</div>
 	</div>

@@ -12,9 +12,25 @@ class HomeController extends BaseController {
 			$category = 'javascript';
 		}
 
-		$news = News::where('category', '=', $category)
-			->orderBy('timestamp', 'DESC')
-			->paginate();
+		$filter = Input::get('filter');
+
+		
+		if($filter){
+
+			$date = Carbon::parse($filter)->toDateString();
+			
+			$news = News::where('category', '=', $category)
+				->whereRaw(DB::raw("DATE(timestamp) = '$date'"))
+				->orderBy('timestamp', 'DESC')
+				->paginate();
+
+		}else{
+			$news = News::where('category', '=', $category)
+				->orderBy('timestamp', 'DESC')
+				->paginate();
+		}
+
+
 
 		$server_timezone = Config::get('app.timezone');
 
@@ -57,7 +73,8 @@ class HomeController extends BaseController {
 			'category' => '/' . $category,
 			'news_sources' => $news_sources,
 			'news' => $news,
-			'last_updated' => $last_updated
+			'last_updated' => $last_updated,
+			'filter' => $filter,
 		);
 		return View::make('news', $page_data);
 	}
