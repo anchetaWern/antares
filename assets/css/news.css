@@ -203,3 +203,13 @@ a.item-link:visited {
 .clear {
     clear: both;
 }
+
+#alert.error {
+    background: #DB6363;
+}
+
+#alert {
+    padding: 25px 10px;
+    color: #FFF;
+    margin-bottom: 20px;
+}

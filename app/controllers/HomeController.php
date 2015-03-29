@@ -17,8 +17,12 @@ class HomeController extends BaseController {
 		
 		if($filter){
 
-			$date = Carbon::parse($filter)->toDateString();
-			
+			try{
+				$date = Carbon::parse($filter)->toDateString();
+			}catch(Exception $e){
+				return Redirect::back()
+					->with('message', array('type' => 'error', 'text' => 'You have entered an invalid filter'));
+			}
 			$news = News::where('category', '=', $category)
 				->whereRaw(DB::raw("DATE(timestamp) = '$date'"))
 				->orderBy('timestamp', 'DESC')
@@ -30,13 +34,22 @@ class HomeController extends BaseController {
 				->paginate();
 		}
 
+		$page = Input::get('page');
+		$news_count = count($news);
+		if($news_count == 0 && empty($page)){
+			return Redirect::back()
+					->with('message', array('type' => 'error', 'text' => 'Your filter did not return any results'));
+		}
 
 
 		$server_timezone = Config::get('app.timezone');
 
-		$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news[0]->timestamp, $server_timezone)
-			->setTimezone('Asia/Manila')
-			->format('M d g:i a');
+		$last_updated = Carbon::now()->toDateString();
+		if($news_count > 0){
+			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news[0]->timestamp, $server_timezone)
+				->setTimezone('Asia/Manila')
+				->format('M d g:i a');
+		}
 
 		$news_sources = array(
 			'/hn' => 'Hacker News',

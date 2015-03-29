@@ -55,6 +55,11 @@
 
 		<div id="news">
 			<h2></h2>
+			@if(Session::has('message'))
+			<div id="alert" class="{{ Session::get('message')['type'] }}">
+				{{ Session::get('message')['text'] }}
+			</div>
+			@endif
 			<div class="small">Last updated: {{ $last_updated }} PHT</div>
 			<div class="clear"></div>
 			<div class="filter">
