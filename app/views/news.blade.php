@@ -74,6 +74,9 @@
 				<li class="item">
 					<div class="date {{ ToggleHelper::showWhenCurrentDateIsNotEqualtoPrevious($key, $news) }}">{{ Carbon::createFromFormat('Y-m-d H:i:s', $item->timestamp)->format('M d') }}</div>
 					<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
+					<div>
+						<a href="http://{{ $item->source }}" class="source">{{ $item->source }}</a>
+					</div>
 					<div class="actions">
 						<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-facebook"></i></a>
 						<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-twitter"></i></a>

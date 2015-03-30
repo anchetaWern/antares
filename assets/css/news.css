@@ -108,9 +108,9 @@ a.item-link:visited {
     margin: 5px;
 }
 
-#news .item a {
+#news .item-link {
     font-size: 20px;
-    color: #444;
+    color: #1C90F2;
 }
 
 #news .item a:hover {
@@ -212,4 +212,8 @@ a.item-link:visited {
     padding: 25px 10px;
     color: #FFF;
     margin-bottom: 20px;
+}
+
+.item .source {
+    color: #949494;
 }
