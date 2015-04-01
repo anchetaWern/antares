@@ -12,6 +12,7 @@ h2 {
     color: #7C7C7C;
     border-bottom: 1px dashed #ccc;
     padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 a {
@@ -214,4 +215,22 @@ a.item-link:visited {
 
 .item .source {
     color: #949494;
+}
+
+#news-category a::after {
+    content: ",";
+}
+
+#news-category a:last-of-type::after {
+    content: "";
+}
+
+#news-category a {
+    font-size: 14px;
+    color: #3776EA;
+}
+
+#news-category {
+    color: #7B7A7A;
+    margin-bottom: 15px;
 }

@@ -20,7 +20,7 @@ class HomeController extends BaseController {
 			try{
 				$date = Carbon::parse($filter)->toDateString();
 			}catch(Exception $e){
-				return Redirect::back()
+				return Redirect::to($category)
 					->with('message', array('type' => 'error', 'text' => 'You have entered an invalid filter'));
 			}
 			$news = News::where('category', '=', $category)
@@ -52,44 +52,201 @@ class HomeController extends BaseController {
 		}
 
 		$news_sources = array(
-			'/hn' => 'Hacker News',
-			'/producthunt' => 'Product Hunt',
-			'/github' => 'Github',
-			'/medium' => 'Medium',
-			'/dn' => 'Designer News',
-			'/readability' => 'Readability Top Reads',
-			'/slashdot' => 'Slashdot',
-			'/php' => 'PHP',
-			'/html5' => 'HTML5',
-			'/css' => 'CSS',
-			'/js' => 'JavaScript',
-			'/ruby' => 'Ruby',
-			'/db' => 'Database',
-			'/programmer' => 'Programmer',
-			'/design' => 'Designers',
-			'/gamedev' => 'Game Development',
-			'/webdev' => 'Web Development',
-			'/web-operations' => 'Web Operations',
-			'/web-performance' => 'Web Performance',
-			'/tools' => 'Tools',
-			'/python' => 'Python',
-			'/go' => 'Go',
-			'/ios' => 'IOS',
-			'/android' => 'Android',
-			'/perl' => 'Perl',
-			'/devops' => 'Devops',
-			'/wordpress' => 'Wordpress',
-			'/nondev' => 'Non-developer'
+			'hn' => array(
+				'title' => 'Hacker News',
+				'sources' => array(
+					'Hacker News' => 'https://news.ycombinator.com/'
+				)
+			),
+			'producthunt' => array(
+				'title' => 'Product Hunt',
+				'sources' => array(
+					'Product Hunt' => 'http://www.producthunt.com/'
+				)
+			),
+			'github' => array(
+				'title' => 'Github',
+				'sources' => array(
+					'Github' => 'https://github.com/trending'
+				)
+			),
+			'medium' => array(
+				'title' => 'Medium',
+				'sources' => array(
+					'Medium' => 'https://medium.com/'
+				)
+			),
+			'dn' => array(
+				'title' => 'Designer News',
+				'sources' => array(
+					'Medium' => 'https://news.layervault.com/'
+				)
+			),
+			'readability' => array(
+				'title' => 'Readability Top Reads',
+				'sources' => array(
+					'Readability' => 'https://readability.com/topreads/'
+				)
+			),
+			'slashdot' => array(
+				'title' => 'Slashdot',
+				'sources' => array(
+					'Slashdot' => 'http://slashdot.org'
+				)
+			),
+			'php' => array(
+				'title' => 'PHP',
+				'sources' => array(
+					'PHP Weekly' => 'http://www.phpweekly.com/'
+				)
+			),
+			'html5' => array(
+				'title' => 'HTML5',
+				'sources' => array(
+					'HTML5 Weekly' => 'http://html5weekly.com/'
+				)
+			),
+			'css' => array(
+				'title' => 'CSS',
+				'sources' => array(
+					'CSS Weekly' => 'http://css-weekly.com/',
+					'Responsive Design Weekly' => 'http://responsivedesignweekly.com/'
+				)
+			),
+			'js' => array(
+				'title' => 'JavaScript',
+				'sources' => array(
+					'JavaScript Weekly' => 'http://javascriptweekly.com/',
+					'Node Weekly' => 'http://nodeweekly.com/',
+					'Ember Weekly' => 'http://emberweekly.com/',
+					'EchoJS' => 'http://www.echojs.com/'
+				)
+			),
+			'ruby' => array(
+				'title' => 'Ruby',
+				'sources' => array(
+					'Ruby Weekly' => 'http://rubyweekly.com/'
+				)
+			),
+			'db' => array(
+				'title' => 'Database',
+				'sources' => array(
+					'DB Weekly' => 'http://dbweekly.com/',
+					'Postgres Weekly' => 'http://postgresweekly.com/',
+					'NoSQL Weekly' => 'http://www.nosqlweekly.com/'
+				)
+			),
+			'programmer' => array(
+				'title' => 'Programmer',
+				'sources' => array(
+					'Status Code' => 'http://statuscode.org/'
+				)
+			),
+			'design' => array(
+				'title' => 'Designers',
+				'sources' => array(
+					'Sidebar' => 'http://sidebar.io/'
+				)
+			),
+			'gamedev' => array(
+				'title' => 'Game Development',
+				'sources' => array(
+					'Gamedev.js Weekly' => 'http://gamedevjsweekly.com/'
+				)
+			),
+			'webdev' => array(
+				'title' => 'Web Development',
+				'sources' => array(
+					'Breaking Development' => 'http://bdconf.com/',
+					'Versioning' => 'http://www.sitepoint.com/versioning/',
+					'Web Development Reading List' => 'https://wdrl.info/',
+					'Web Design Weekly' => 'https://web-design-weekly.com/',
+					'Mobile Web Weekly' => 'http://mobilewebweekly.co/',
+					'Hey Designer' => 'http://heydesigner.com/'
+				)
+			),
+			'web-operations' => array(
+				'title' => 'Web Operations',
+				'sources' => array(
+					'Web Operations Weekly' => 'http://webopsweekly.com/'
+				)
+			),
+			'web-performance' => array(
+				'title' => 'Web Performance',
+				'sources' => array(
+					'Web Performance News' => 'http://www.webperformancenews.com/'
+				)
+			),
+			'tools' => array(
+				'title' => 'Tools',
+				'sources' => array(
+					'Web Tools Weekly' => 'http://webtoolsweekly.com/'
+				)
+			),
+			'python' => array(
+				'title' => 'Python',
+				'sources' => array(
+					'Python Weekly' => 'http://www.pythonweekly.com/',
+					'PyCoders Weekly' => 'http://pycoders.com/'
+				)
+			),
+			'go' => array(
+				'title' => 'Go',
+				'sources' => array(
+					'Go Newsletter' => 'http://golangweekly.com/'
+				)
+			),
+			'ios' => array(
+				'title' => 'IOS',
+				'sources' => array(
+					'IOS Dev Weekly' => 'https://iosdevweekly.com/'
+				)
+			),
+			'android' => array(
+				'title' => 'Android',
+				'sources' => array(
+					'Android Weekly' => 'http://androidweekly.net/'
+				)
+			),
+			'perl' => array(
+				'title' => 'Perl',
+				'sources' => array(
+					'Perl Weekly' => 'http://perlweekly.com/'
+				)
+			),
+			'devops' => array(
+				'title' => 'Devops',
+				'sources' => array(
+					'DevOps Weekly' => 'http://www.devopsweekly.com/'
+				)
+			),
+			'wordpress' => array(
+				'title' => 'Wordpress',
+				'sources' => array(
+					'wpMail' => 'http://wpmail.me/'
+				)
+			),
+			'nondev' => array(
+				'title' => 'Non-developer',
+				'sources' => array(
+					'Next Draft' => 'http://nextdraft.com/'
+				)
+			)
 		);
 
 		$page_data = array(
-			'category' => '/' . $category,
+			'category' => $category,
 			'news_sources' => $news_sources,
 			'news' => $news,
 			'last_updated' => $last_updated,
 			'filter' => $filter,
 		);
 		return View::make('news', $page_data);
+	}
+
+
+	public function about(){
+		return View::make('about');
 	}
 
 }

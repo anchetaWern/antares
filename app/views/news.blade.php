@@ -36,10 +36,13 @@
 		<header>
 			<h1>{{ Config::get('app.title') }}</h1>
 			<span class="sub-text">Your developer news. All in one place.</span>
+			<div id="about">
+			    <a href="/about">About</a>
+			</div>
 			<div id="mobile-nav">
 				<select name="news_sources" id="news_sources">
 					@foreach($news_sources as $url => $news_source)
-					<option value="{{ $url }}" {{ FormHelper::isSelected($url, $category) }}>{{ $news_source }}</option>
+					<option value="/{{ $url }}" {{ FormHelper::isSelected($url, $category) }}>{{ $news_source['title'] }}</option>
 					@endforeach
 				</select>
 			</div>
@@ -47,14 +50,20 @@
 		<div id="nav">
 			<ul>	
 				@foreach($news_sources as $url => $news_source)
-				<li><a href="{{ $url }}">{{ $news_source }}</a></li>
+				<li><a href="/{{ $url }}">{{ $news_source['title'] }}</a></li>
 				@endforeach
 			</ul>
 		</div>
 
 
 		<div id="news">
-			<h2></h2>
+			<div id="news-category">
+				<h2>{{ $category }}</h2>
+				Sources: 
+				@foreach($news_sources[$category]['sources'] as $source => $source_url)
+					<a href="{{ $source_url }}" target="_blank">{{ $source }}</a>
+				@endforeach
+			</div>
 			@if(Session::has('message'))
 			<div id="alert" class="{{ Session::get('message')['type'] }}">
 				{{ Session::get('message')['text'] }}
