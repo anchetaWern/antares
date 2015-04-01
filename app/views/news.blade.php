@@ -83,7 +83,6 @@
 						<a href="https://plus.google.com/share?url={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-google-plus"></i></a>
 						<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-linkedin"></i></a>
 						<a href="https://getpocket.com/save?url={{ $item->url }}" class="hidden" target="_blank">Pocket</a>
-						<a href="http://ec2-54-68-251-216.us-west-2.compute.amazonaws.com/post/create?content={{ $item->title }} {{ $item->url }}" class="hidden" target="_blank">Ahead</a>
 					</div>
 				</li>
 			@endforeach
