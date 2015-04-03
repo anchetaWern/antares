@@ -86,7 +86,7 @@ class NewsUpdaterController extends BaseController {
 		                DB::table('news')->insert(array(
 		                    'title' => $text,
 		                    'url' => $url,
-		                    'category' => 'javascript',
+		                    'category' => 'js',
 		                    'timestamp' => $time,
 		                    'curator' => 'echojs',
 		                    'source' => $url_parts['host']
@@ -356,7 +356,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'javascript',
+	                    'category' => 'js',
 	                    'timestamp' => $time,
 	                    'curator' => 'jsweekly',
 	                    'source' => $url_parts['host']
@@ -686,7 +686,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'javascript',
+	                    'category' => 'js',
 	                    'timestamp' => $time,
 	                    'curator' => 'nodeweekly',
 	                    'source' => $url_parts['host']
@@ -1386,7 +1386,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'javascript',
+	                    'category' => 'js',
 	                    'timestamp' => $time,
 	                    'curator' => 'emberweekly',
 	                    'source' => $url_parts['host']

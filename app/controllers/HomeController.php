@@ -8,10 +8,6 @@ class HomeController extends BaseController {
 			$category = 'hn';
 		}
 
-		if($category == 'js'){
-			$category = 'javascript';
-		}
-
 		$filter = Input::get('filter');
 
 		
