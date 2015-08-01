@@ -18,36 +18,39 @@ class NewsUpdaterController extends BaseController {
 
 	        $text = html_entity_decode($item_data['title'], ENT_QUOTES);
 
-	        $url = $item_data['url'];
-			$url_parts = parse_url($url);
-			if(!empty($url_parts['path'])){
+	        if(!empty($item_data['url'])){
+	        	$url = $item_data['url'];
+				$url_parts = parse_url($url);
+				if(!empty($url_parts['host']) && !empty($url_parts['path'])){
 
-				
-				$url = $url_parts['host'] . $url_parts['path'];
+					
+					$url = $url_parts['host'] . $url_parts['path'];
 
-		        $time = date('Y-m-d H:i:s', $item_data['time']);
-		    
-		        
-		        $db_item = DB::table('news')
-		            ->where('url', '=', $url)
-		            ->first();
+			        $time = date('Y-m-d H:i:s', $item_data['time']);
+			    
+			        
+			        $db_item = DB::table('news')
+			            ->where('url', '=', $url)
+			            ->first();
 
-		        if(empty($db_item)){
+			        if(empty($db_item)){
 
-		            DB::table('news')->insert(array(
-		                'title' => $text,
-		                'url' => $url,
-		                'category' => 'hn',
-		                'timestamp' => $time,
-		                'curator' => 'hackernews',
-		                'source' => $url_parts['host']
-		            ));
-		        }else{
-		            DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-		        }
-		        
-		        echo "<li>" . $text . " - " . $url . "</li>";
-			}
+			            DB::table('news')->insert(array(
+			                'title' => $text,
+			                'url' => $url,
+			                'category' => 'hn',
+			                'timestamp' => $time,
+			                'curator' => 'hackernews',
+			                'source' => $url_parts['host']
+			            ));
+			        }else{
+			            DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+			        }
+			        
+			        echo "<li>" . $text . " - " . $url . "</li>";
+				}
+	        }
+	        
 
 
 	    }
@@ -75,7 +78,7 @@ class NewsUpdaterController extends BaseController {
 	            $url = $item['guid'];
 				$url_parts = parse_url($url);
 				
-				if(!empty($url_parts['path'])){				
+				if(!empty($url_parts['host']) && !empty($url_parts['path'])){				
 					$url = $url_parts['host'] . $url_parts['path'];
 
 		            $db_item = DB::table('news')
@@ -134,11 +137,11 @@ class NewsUpdaterController extends BaseController {
 
                 if(!empty($url_parts['path'])){
 
-	                $url = $url_parts['host'] . $url_parts['path'];
 
 		            $text = trim($link->plaintext);
-		            if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls)){
+		            if(!empty($url) && !empty($text) && !empty($url_parts['host']) && !in_array($url, $excluded_urls)){
 		                
+	                	$url = $url_parts['host'] . $url_parts['path'];
 		                $time = date('Y-m-d H:i:s');
 		                
 
@@ -215,7 +218,7 @@ class NewsUpdaterController extends BaseController {
 
 				$url = $url_parts['host'] . $url_parts['path'];
 
-	            if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	            if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	                
 	                $time = date('Y-m-d H:i:s');
@@ -281,7 +284,7 @@ class NewsUpdaterController extends BaseController {
 	        $url = $link->href;
 			$url_parts = parse_url($url);
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 				
 				$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -345,7 +348,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -409,7 +412,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -477,7 +480,8 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
+
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -498,7 +502,7 @@ class NewsUpdaterController extends BaseController {
 	            }
 	            
 	            echo "<li>" .  $text . " - " . $url . "</li>";
-
+	        	
 
 	        }
 	    }
@@ -611,7 +615,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -675,7 +679,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -741,7 +745,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -805,7 +809,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -862,7 +866,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -919,7 +923,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	        
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -980,7 +984,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1044,7 +1048,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
@@ -1102,7 +1106,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($url, $excluded_urls) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1172,7 +1176,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1218,7 +1222,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1269,7 +1273,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1326,7 +1330,7 @@ class NewsUpdaterController extends BaseController {
 			
 
 
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	           	
 	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1375,7 +1379,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	           	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1424,7 +1428,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1485,7 +1489,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($url, $excluded_urls) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1547,7 +1551,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1605,7 +1609,7 @@ class NewsUpdaterController extends BaseController {
 	        $style = str_replace(' ', '', $link->style);
 
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1667,7 +1671,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $time = date('Y-m-d H:i:s');
 
@@ -1733,7 +1737,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	        	$url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1780,7 +1784,7 @@ class NewsUpdaterController extends BaseController {
 	        $url = Url::getRedirect($link->href);     
 			$url_parts = parse_url($url);
 	
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];	  
 	            
@@ -1839,7 +1843,7 @@ class NewsUpdaterController extends BaseController {
 	           	
 	           	$url_parts = parse_url($url);
 
-	           	if(!empty($url_parts['path'])){
+	           	if(!empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	           		$url = $url_parts['host'] . $url_parts['path'];
 		            
@@ -1897,7 +1901,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1936,14 +1940,21 @@ class NewsUpdaterController extends BaseController {
 
 	    $html->load_file($base_url);
 	 
-	    foreach($html->find('h3.block-title a') as $link){
+	    foreach($html->find('.postArticle--short a') as $link){
 	        
-	        $text = trim($link->plaintext);
 	        $url = $link->href;     
 			$url_parts = parse_url($url);
-			
 
-	        if(!empty($text) && !empty($url) && !empty($url_parts['path'])){
+			$h2 = $link->find('.graf--h2', 0);
+			$h3 = $link->find('.graf--h3', 0);
+			if($h2){
+				$text = trim($h2->plaintext);
+			}else if($h3){
+				$text = trim($h3->plaintext);
+			}
+
+
+	        if(!empty($text) && !empty($url) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -1967,6 +1978,8 @@ class NewsUpdaterController extends BaseController {
 	            echo "<li>" .  $text . " - " . $url . "</li>";
 	            
 	        }
+	       	
+	       
 	       
 	    }
 
@@ -1977,7 +1990,7 @@ class NewsUpdaterController extends BaseController {
 	public function readability(){
 	    //everyday
 	    
-	    $base_url = 'https://readability.com/topreads/';
+	    $base_url = 'https://readability.com/topreads/?within=week';
 
 	    $html = new simple_html_dom();
 
@@ -1997,9 +2010,10 @@ class NewsUpdaterController extends BaseController {
 	            $time = date('Y-m-d H:i:s');
 
 	            $url_parts = parse_url($url);
-	            $url = $url_parts['host'] . $url_parts['path'];
 
-	            if(!empty($url_parts['path'])){
+	            if(!empty($url_parts['host']) && !empty($url_parts['path'])){
+	            	
+	            	$url = $url_parts['host'] . $url_parts['path'];
 		            
 		            $db_item = DB::table('news')->where('url', '=', $url)->first();
 
@@ -2053,7 +2067,7 @@ class NewsUpdaterController extends BaseController {
 
 	        $text = trim($link->plaintext);
 	        
-	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !in_array($text, $excluded_text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -2092,14 +2106,14 @@ class NewsUpdaterController extends BaseController {
 	    $html->load_file($base_url);
 
 
-	    foreach($html->find('.post-url') as $link){
+	    foreach($html->find('.post-item--text--name') as $link){
 	        
 	        $text = trim($link->plaintext);
 	        $url = 'http://www.producthunt.com' . $link->href; 
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];	 
 	            $time = date('Y-m-d H:i:s');
@@ -2133,21 +2147,21 @@ class NewsUpdaterController extends BaseController {
 	public function designernews(){
 	    //everyday
 	    
-	    $base_url = 'https://news.layervault.com/';
+	    $base_url = 'https://www.designernews.co/';
 
 	    $html = new simple_html_dom();
 
 	    $html->load_file($base_url);
 
 
-	    foreach($html->find('.StoryUrl') as $link){
+	    foreach($html->find('.story-link') as $link){
 	        
 	        $text = trim($link->story_title);
 	        $url = $link->href; 
 			$url_parts = parse_url($url);
 			
 
-	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -2196,7 +2210,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 	       
-	        if(!empty($url) && !empty($text) && !empty($url_parts['path'])){
+	        if(!empty($url) && !empty($text) && !empty($url_parts['host']) && !empty($url_parts['path'])){
 	            
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -2263,7 +2277,7 @@ class NewsUpdaterController extends BaseController {
 			$url_parts = parse_url($url);
 			
 
-	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && strpos($url, 'http://webopsweekly.com') === false && !empty($url_parts['path'])){
+	        if(!in_array($url, $excluded_urls) && !in_array($text, $excluded_text) && !empty($url) && !empty($text) && strpos($url, 'http://webopsweekly.com') === false && !empty($url_parts['host']) && !empty($url_parts['path'])){
 
 	            $url = $url_parts['host'] . $url_parts['path'];
 	            $time = date('Y-m-d H:i:s');
@@ -2322,7 +2336,7 @@ class NewsUpdaterController extends BaseController {
 
 	            if(empty($db_item)){
 	            	
-	            	if(!empty($url_parts['path'])){
+	            	if(!empty($url_parts['host']) && !empty($url_parts['path'])){
 	            		$url = $url_parts['host'] . $url_parts['path'];	 
 	            		
 		                DB::table('news')->insert(array(
