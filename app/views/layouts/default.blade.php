@@ -12,7 +12,7 @@
 	<meta property="og:title" content="{{ Config::get('app.title') }}">
 	<meta property="og:type" content="website">
 	<meta property="og:image" content="{{ asset('assets/img/icon.png') }}">
-	<meta property="og:url" content="http://antaresapp.space">
+	<meta property="og:url" content="http://antaresapp.github.io">
 	<meta property="og:description" content="Your developer news. All in one place.">
 
 	    
