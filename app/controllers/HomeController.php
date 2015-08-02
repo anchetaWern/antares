@@ -10,30 +10,15 @@ class HomeController extends BaseController {
 			$category = 'hn';
 		}
 
-		$filter = Input::get('filter');
 
-		
-		if($filter){
-
-			try{
-				$date = Carbon::parse($filter)->toDateString();
-			}catch(Exception $e){
-				return Redirect::to($category)
-					->with('message', array('type' => 'error', 'text' => 'You have entered an invalid filter'));
-			}
-			$news = News::where('category', '=', $category)
-				->whereRaw(DB::raw("DATE(timestamp) = '$date'"))
-				->orderBy('timestamp', 'DESC')
-				->paginate();
-
-		}else{
-			$news = News::where('category', '=', $category)
-				->orderBy('timestamp', 'DESC')
-				->paginate();
-		}
+		$news = News::where('category', '=', $category)
+			->where('status', '=', 1)
+			->orderBy('timestamp', 'DESC')
+			->first();		
 
 		$page = Input::get('page');
 		$news_count = count($news);
+
 		if($news_count == 0 && empty($page)){
 			return Redirect::back()
 					->with('message', array('type' => 'error', 'text' => 'Your filter did not return any results'));
@@ -44,10 +29,17 @@ class HomeController extends BaseController {
 
 		$last_updated = Carbon::now()->toDateString();
 		if($news_count > 0){
-			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news[0]->timestamp, $server_timezone)
+			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news->timestamp, $server_timezone)
 				->setTimezone('Asia/Manila')
-				->format('M d g:i a');
+				->toDateString();
 		}
+
+
+		$news = News::where('category', '=', $category)
+								->where('status', '=', 1)
+								->whereRaw(DB::raw("DATE(timestamp) = '$last_updated'"))
+								->orderBy('timestamp', 'DESC')
+								->get();
 
 		$news_sources = array(
 			'hn' => array(
@@ -236,16 +228,11 @@ class HomeController extends BaseController {
 			'category' => $category,
 			'news_sources' => $news_sources,
 			'news' => $news,
-			'last_updated' => $last_updated,
-			'filter' => $filter,
+			'last_updated' => $last_updated
 		);
 	
 		$this->layout->content = View::make('news', $page_data);
 	}
 
-
-	public function about(){
-		return View::make('about');
-	}
 
 }
