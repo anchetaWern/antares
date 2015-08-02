@@ -36,7 +36,6 @@
 	@yield('content')
 	</div>
 	<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-	<script src="{{ asset('assets/js/jquery.infinitescroll.js') }}"></script>
-	<script src="{{ asset('assets/js/news.js') }}"></script>
+	<script src="{{ asset('assets/js/admin/news.js') }}"></script>
 </body>
 </html>

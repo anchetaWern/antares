@@ -62,6 +62,10 @@ Route::match(array('GET', 'POST'), '/news/{tags}', function($tags){
 
 Route::get('/{tag?}', 'HomeController@index');
 
+Route::get('/admin/{tag?}', 'AdminController@index');
+
+Route::post('/admin/disablenewsitem', 'AdminController@disableNewsItem');
+
 Route::get('/hn/update', 'NewsUpdaterController@hackernews');
 
 Route::get('/echojs/update', 'NewsUpdaterController@echojs');

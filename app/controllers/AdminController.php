@@ -1,8 +1,7 @@
 <?php
+class AdminController extends BaseController {
 
-class HomeController extends BaseController {
-
-	protected $layout = 'layouts.default';
+	protected $layout = 'layouts.admin';
 
 	public function index($category = null){
 
@@ -22,14 +21,16 @@ class HomeController extends BaseController {
 					->with('message', array('type' => 'error', 'text' => 'You have entered an invalid filter'));
 			}
 			$news = News::where('category', '=', $category)
+				->where('status', '=', 1)
 				->whereRaw(DB::raw("DATE(timestamp) = '$date'"))
 				->orderBy('timestamp', 'DESC')
-				->paginate();
+				->first();
 
 		}else{
 			$news = News::where('category', '=', $category)
+				->where('status', '=', 1)
 				->orderBy('timestamp', 'DESC')
-				->paginate();
+				->first();
 		}
 
 		$page = Input::get('page');
@@ -44,10 +45,18 @@ class HomeController extends BaseController {
 
 		$last_updated = Carbon::now()->toDateString();
 		if($news_count > 0){
-			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news[0]->timestamp, $server_timezone)
+			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news->timestamp, $server_timezone)
 				->setTimezone('Asia/Manila')
-				->format('M d g:i a');
+				->toDateString();
 		}
+
+
+		$news = News::where('category', '=', $category)
+						->where('status', '=', 1)
+						->whereRaw(DB::raw("DATE(timestamp) = '$last_updated'"))
+						->orderBy('timestamp', 'DESC')
+						->get();
+
 
 		$news_sources = array(
 			'hn' => array(
@@ -240,12 +249,15 @@ class HomeController extends BaseController {
 			'filter' => $filter,
 		);
 	
-		$this->layout->content = View::make('news', $page_data);
+		$this->layout->content = View::make('admin.news', $page_data);
+
 	}
 
 
-	public function about(){
-		return View::make('about');
-	}
+	public function disableNewsItem(){
 
+		$id = Input::get('id');
+		DB::table('news')->where('id', '=', $id)->update(array('status' => 0));
+		return 'ok';
+	}
 }

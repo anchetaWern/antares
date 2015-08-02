@@ -13,7 +13,7 @@
 <div id="nav">
 	<ul>	
 		@foreach($news_sources as $url => $news_source)
-		<li><a href="/{{ $url }}">{{ $news_source['title'] }}</a></li>
+		<li><a href="/admin/{{ $url }}">{{ $news_source['title'] }}</a></li>
 		@endforeach
 	</ul>
 </div>
@@ -22,10 +22,6 @@
 <div id="news">
 	<div id="news-category">
 		<h2>{{ $category }}</h2>
-		Sources: 
-		@foreach($news_sources[$category]['sources'] as $source => $source_url)
-			<a href="{{ $source_url }}" target="_blank">{{ $source }}</a>
-		@endforeach
 	</div>
 	@if(Session::has('message'))
 	<div id="alert" class="{{ Session::get('message')['type'] }}">
@@ -34,31 +30,17 @@
 	@endif
 	<div class="small">Last updated: {{ $last_updated }} PHT</div>
 	<div class="clear"></div>
-	<div class="filter">
-		<form method="GET">				
-			<label for="filter">Date Filter</label>
-			<input type="text" id="filter" name="filter" placeholder="Eg. 2 days ago">
-			<button type="submit">Filter</button>
-		</form>
-	</div>
 	<ul id="items">				
 	@foreach($news as $key => $item)
 		<li class="item">
 			<div class="date {{ ToggleHelper::showWhenCurrentDateIsNotEqualtoPrevious($key, $news) }}">{{ Carbon::createFromFormat('Y-m-d H:i:s', $item->timestamp)->format('M d') }}</div>
+			<input type="checkbox" class="disble-item" data-id="{{ $item->id }}">
 			<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
 			<div>
 				<a href="http://{{ $item->source }}" class="source">{{ $item->source }}</a>
 			</div>
-			<div class="actions">
-				<a href="http://www.facebook.com/sharer.php?u={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-facebook"></i></a>
-				<a href="https://twitter.com/share?url={{ $item->url }}&text={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-twitter"></i></a>
-				<a href="https://plus.google.com/share?url={{ $item->url }}" class="hidden" target="_blank"><i class="fa fa-google-plus"></i></a>
-				<a href="http://www.linkedin.com/shareArticle?url={{ $item->url }}&title={{ $item->title }}" class="hidden" target="_blank"><i class="fa fa-linkedin"></i></a>
-				<a href="https://getpocket.com/save?url={{ $item->url }}" class="hidden" target="_blank">Pocket</a>
-			</div>
 		</li>
 	@endforeach
-	{{ $news->appends(array('filter' => $filter))->links() }}
 	</ul>
 </div>
 @stop

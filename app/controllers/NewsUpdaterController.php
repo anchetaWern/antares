@@ -1026,7 +1026,8 @@ class NewsUpdaterController extends BaseController {
 	        'Christian Gloddy',
 	        'Read the Letter online',
 	        'gratipay',
-	        'about the costs of the project here'
+	        'about the costs of the project here',
+	        'Donate via GratiPay'
 	    );
 
 	    $excluded_urls = array(
@@ -1887,7 +1888,8 @@ class NewsUpdaterController extends BaseController {
 	    $base_url = 'http://androidweekly.net/';
 
 	    $excluded_text = array(
-	        'Tweet'
+	        'Tweet',
+	        'Follow Us On Google+'
 	    );
 
 	    $html = new simple_html_dom();
