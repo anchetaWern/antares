@@ -2381,10 +2381,10 @@ class NewsUpdaterController extends BaseController {
 			'php',
 			'html5',
 			'css',
-			'javascript',
+			'js',
 			'ruby',
 			'db',
-			'programmers',
+			'programmer',
 			'design',
 			'webdev',
 			'web-performance',
@@ -2396,7 +2396,8 @@ class NewsUpdaterController extends BaseController {
 			'wordpress',
 			'perl',
 			'devops',
-			'nondev'
+			'nondev',
+			'go'
 		);
 
 
