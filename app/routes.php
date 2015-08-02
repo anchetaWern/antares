@@ -21,50 +21,15 @@ App::before(function($request)
 
 Route::pattern('tag', '[a-z0-9-]+');
 
-Route::match(array('GET', 'POST'), '/news/{tags}', function($tags){
-
-    $offset = 0;
-    $limit = 10;
-    if(Input::has('page')){
-        $page = Input::get('page');
-        $offset = ($page - 1) * $limit;
-    }
-
-
-    $date = date('Y-m-d');
-    $date_lasttwoweeks = date('Y-m-d', strtotime($date . ' - 2 week'));
-
-    $top_stories = DB::table('news')
-        ->where('tags', '=', $tags)
-        ->whereRaw("DATE(timestamp) BETWEEN '$date_lasttwoweeks' AND '$date'")
-        ->select('title', 'url', 'timestamp', 'tags')
-        ->orderBy('timestamp', 'DESC')
-        ->take($limit)
-        ->skip($offset)
-        ->get();
-
-    if(empty($top_stories)){
-        $date_lastfourweeks = date('Y-m-d', strtotime($date . ' - 4 week'));
-
-        $top_stories = DB::table('news')
-            ->where('tags', '=', $tags)
-            ->whereRaw("DATE(timestamp) BETWEEN '$date_lastfourweeks' AND '$date'")
-            ->select('title', 'url', 'timestamp', 'tags')
-            ->orderBy('timestamp', 'DESC')
-            ->take($limit)
-            ->skip($offset)
-            ->get();
-
-    }
-
-    return $top_stories;
-});
 
 Route::get('/{tag?}', 'HomeController@index');
+
+Route::get('/admin/makestatic', 'AdminController@makeStatic');
 
 Route::get('/admin/{tag?}', 'AdminController@index');
 
 Route::post('/admin/disablenewsitem', 'AdminController@disableNewsItem');
+
 
 Route::get('/hn/update', 'NewsUpdaterController@hackernews');
 
@@ -146,11 +111,4 @@ Route::get('/webops/update', 'NewsUpdaterController@weboperationsweekly');
 
 Route::get('/webperformancenews/update', 'NewsUpdaterController@webperformancenews');
 
-Route::get('/reset/{pass}', function($pass){
-    //runs once a month
-    if($pass == 'nitoryolai225(@'){    
-        DB::table('news')->truncate();
-        return 'ok';
-    }
-    return 'failed';
-});
+Route::get('/json/update', 'NewsUpdaterController@updateJSON');

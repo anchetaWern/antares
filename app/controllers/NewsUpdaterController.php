@@ -2366,4 +2366,77 @@ class NewsUpdaterController extends BaseController {
 
 	}
 
+
+
+	public function updateJSON(){
+
+		$categories = array(
+			'hn',
+			'producthunt',
+			'github',
+			'medium',
+			'dn',
+			'readability',
+			'slashdot',
+			'php',
+			'html5',
+			'css',
+			'javascript',
+			'ruby',
+			'db',
+			'programmers',
+			'design',
+			'webdev',
+			'web-performance',
+			'web-operations',
+			'tools',
+			'python',
+			'ios',
+			'android',
+			'wordpress',
+			'perl',
+			'devops',
+			'nondev'
+		);
+
+
+		$server_timezone = Config::get('app.timezone');
+
+		foreach($categories as $category){
+
+			$news = News::where('category', '=', $category)
+					->where('status', '=', 1)
+					->orderBy('timestamp', 'DESC')
+					->first();	
+
+			$page = Input::get('page');
+			$news_count = count($news);
+
+			$last_updated = Carbon::now()->toDateString();
+			if($news_count > 0){
+				$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news->timestamp, $server_timezone)
+					->setTimezone('Asia/Manila')
+					->toDateString();
+			}
+
+			$news = News::where('category', '=', $category)
+					->where('status', '=', 1)
+					->whereRaw(DB::raw("DATE(timestamp) = '$last_updated'"))
+					->select('title', 'url')
+					->orderBy('timestamp', 'DESC')
+					->get()
+					->toJson();
+
+
+			file_put_contents(public_path() . "/files/{$category}.json", $news);
+
+			
+		}
+
+
+		return $categories;
+
+
+	}
+
 }

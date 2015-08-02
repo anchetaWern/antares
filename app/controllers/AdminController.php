@@ -260,4 +260,12 @@ class AdminController extends BaseController {
 		DB::table('news')->where('id', '=', $id)->update(array('status' => 0));
 		return 'ok';
 	}
+
+
+	public function makeStatic(){
+		
+		copy("http://localhost:1111/medium", public_path() . "/medium.html");
+		return 'ok';
+		
+	}
 }
