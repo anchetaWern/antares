@@ -2365,6 +2365,62 @@ class NewsUpdaterController extends BaseController {
 
 
 
+	public function longreadsTech(){
+
+
+		$html = new simple_html_dom();
+
+	    $html->load_file('http://longreads.com/articles/search/?q=Tech');
+
+        $date = date('Y-m-d');
+
+        foreach($html->find('.article-title') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain)){
+	                
+               
+	                $time = date('Y-m-d H:i:s');
+	                
+
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'longreads-tech',
+	                        'timestamp' => $time,
+	                        'curator' => 'longreads',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+	                
+	                
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+
+
+	            }
+	            
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
+
 	public function updateJSON(){
 
 		$categories = array(
@@ -2394,7 +2450,8 @@ class NewsUpdaterController extends BaseController {
 			'perl',
 			'devops',
 			'nondev',
-			'go'
+			'go',
+			'longreads-tech'
 		);
 
 
@@ -2435,5 +2492,8 @@ class NewsUpdaterController extends BaseController {
 
 
 	}
+
+
+
 
 }

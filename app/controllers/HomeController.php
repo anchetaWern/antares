@@ -69,7 +69,7 @@ class HomeController extends BaseController {
 			'dn' => array(
 				'title' => 'Designer News',
 				'sources' => array(
-					'Medium' => 'https://news.layervault.com/'
+					'Designer News' => 'https://news.layervault.com/'
 				)
 			),
 			'readability' => array(
@@ -216,6 +216,12 @@ class HomeController extends BaseController {
 					'wpMail' => 'http://wpmail.me/'
 				)
 			),
+			'longreads-tech' => array(
+				'title' => 'Longreads',
+				'sources' => array(
+					'Longreads Tech' => 'http://longreads.com/articles/search/?q=Tech'
+				)
+			),			
 			'nondev' => array(
 				'title' => 'Non-developer',
 				'sources' => array(

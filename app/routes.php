@@ -111,4 +111,6 @@ Route::get('/webops/update', 'NewsUpdaterController@weboperationsweekly');
 
 Route::get('/webperformancenews/update', 'NewsUpdaterController@webperformancenews');
 
+Route::get('/longreads-tech/update', 'NewsUpdaterController@longreadsTech');
+
 Route::get('/json/update', 'NewsUpdaterController@updateJSON');
