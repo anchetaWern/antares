@@ -1662,21 +1662,23 @@ class NewsUpdaterController extends BaseController {
 
 	    foreach($html->find('#main a') as $link){
 	        
-	        $text = trim($link->plaintext);
 	        $url = $link->href;     
 			$url_parts = new \Purl\Url($url);
 			
-	       
-	        if(!empty($text) && !empty($url) && !in_array($text, $excluded_text) && !in_array($url, $excluded_urls) && !empty($url_parts->registerableDomain)){
+	        if(filter_var($url, FILTER_VALIDATE_URL) && !empty($url) && !in_array($url, $excluded_urls) && !empty($url_parts->registerableDomain)){
 
 	            $time = date('Y-m-d H:i:s');
 
-	          
+				$html->load_file($url);
+		       	$text = $html->find('title', 0)->plaintext;
+
+		       	$title = html_entity_decode($text, ENT_QUOTES);
+	          	
 	            $db_item = DB::table('news')->where('url', '=', $url)->first();
 
 	            if(empty($db_item)){
 	                DB::table('news')->insert(array(
-	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'title' => $title,
 	                    'url' => $url,
 	                    'category' => 'devops',
 	                    'timestamp' => $time,
@@ -1686,7 +1688,7 @@ class NewsUpdaterController extends BaseController {
 	            }else{
 	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
 	            } 
-	            
+	           
 	            echo "<li>" .  $text . " - " . $url . "</li>";
 
 	        }
