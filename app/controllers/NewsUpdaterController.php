@@ -2476,7 +2476,7 @@ class NewsUpdaterController extends BaseController {
 			$news = News::where('category', '=', $category)
 					->where('status', '=', 1)
 					->whereRaw(DB::raw("DATE(timestamp) = '$last_updated'"))
-					->select('title', 'url')
+					->select('title', 'url', 'source')
 					->orderBy('timestamp', 'DESC')
 					->get()
 					->toJson();
