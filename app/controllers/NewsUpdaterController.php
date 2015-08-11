@@ -2416,7 +2416,6 @@ class NewsUpdaterController extends BaseController {
 			$last_updated = Carbon::now()->toDateString();
 			if($news_count > 0){
 				$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news->timestamp, $server_timezone)
-					->setTimezone('Asia/Manila')
 					->toDateString();
 			}
 

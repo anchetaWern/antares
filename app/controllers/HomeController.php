@@ -16,6 +16,7 @@ class HomeController extends BaseController {
 			->orderBy('timestamp', 'DESC')
 			->first();		
 
+
 		$page = Input::get('page');
 		$news_count = count($news);
 
@@ -30,7 +31,6 @@ class HomeController extends BaseController {
 		$last_updated = Carbon::now()->toDateString();
 		if($news_count > 0){
 			$last_updated = Carbon::createFromFormat('Y-m-d H:i:s', $news->timestamp, $server_timezone)
-				->setTimezone('Asia/Manila')
 				->toDateString();
 		}
 
