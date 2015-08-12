@@ -3,7 +3,7 @@ class NewsUpdaterController extends BaseController {
 
 	public function hackernews(){
 
-	    $client = new GuzzleHttp\Client();
+	    $client = new Guzzle\Http\Client();
 
 	    $top_stories = array();
 
@@ -53,57 +53,6 @@ class NewsUpdaterController extends BaseController {
 	    }
 
 	    return 'success';
-
-	}
-
-
-	public function echojs(){
-
-	    $client = new GuzzleHttp\Client();
-	    $response = $client->get('http://www.echojs.com/rss');
-
-	    $date = date('Y-m-d');
-
-	    $data = json_decode(json_encode($response->xml()), true);
-	    if(!empty($data['channel'])){
-	        foreach($data['channel']['item'] as $item){
-
-	            $time = date('Y-m-d H:i:s');
-
-	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
-	            
-	            $url = $item['guid'];
-				$url_parts = new \Purl\Url($url);
-				
-				if(!empty($url_parts->registerableDomain)){				
-			
-
-		            $db_item = DB::table('news')
-		                ->where('url', '=', $url)
-		                ->first();
-
-		            if(empty($db_item)){
-		                DB::table('news')->insert(array(
-		                    'title' => $text,
-		                    'url' => $url,
-		                    'category' => 'js',
-		                    'timestamp' => $time,
-		                    'curator' => 'echojs',
-		                    'source' => $url_parts->registerableDomain
-		                ));
-		            }else{
-		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-		            }
-		            
-
-		            echo "<li>" .  $text . " - " . $url . "</li>";
-				}
-
-	        }
-	    }
-
-	    return 'success';
-
 
 	}
 
@@ -2313,7 +2262,7 @@ class NewsUpdaterController extends BaseController {
 
 		//every saturday
 
-	    $client = new GuzzleHttp\Client();
+	    $client = new Guzzle\Http\Client();
 	    $response = $client->get('http://www.webperformancenews.com/feed.xml');
 
 	    $date = date('Y-m-d');
@@ -2419,6 +2368,343 @@ class NewsUpdaterController extends BaseController {
 	    return 'success';
 
 	}
+
+
+	public function echojs(){
+
+		$request_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+		$getfield = '?screen_name=echojs';
+		$requestMethod = 'GET';
+
+		$twitter = new TwitterAPIExchange(Config::get('keys'));
+		$json = $twitter->setGetfield($getfield)
+		    ->buildOauth($request_url, $requestMethod)
+		    ->performRequest();
+
+		$data = json_decode($json, true);
+		
+		$client = new Guzzle\Http\Client();
+		$client->setDefaultOption('verify', false);
+
+		foreach($data as $row){
+		
+			$org_text = $row['text'];
+			$urls = \Purl\Url::extract($org_text); 
+
+			if(!empty($urls)){			
+	            $time = date('Y-m-d H:i:s');
+	            
+				$request = $client->get($urls[0]);
+				$history = new Guzzle\Plugin\History\HistoryPlugin();
+				$request->addSubscriber($history);
+				$response = $request->send();
+				$final_url = $response->getEffectiveUrl();
+
+				$url_parts = new \Purl\Url($final_url);
+
+	            $text = str_replace($urls[0], '', $org_text);
+	            
+	            
+	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
+
+	            if(empty($db_item)){
+	                DB::table('news')->insert(array(
+	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'url' => $final_url,
+	                    'category' => 'js',
+	                    'timestamp' => $time,
+	                    'curator' => 'echojs',
+	                    'source' => $url_parts->registerableDomain
+	                ));
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+	            
+	            echo "<li>" .  $text . " - " . $final_url . "</li>";
+			}
+
+		}
+
+	}
+
+
+	public function javascriptlive(){
+
+		$request_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+		$getfield = '?screen_name=JavaScriptDaily';
+		$requestMethod = 'GET';
+
+		$twitter = new TwitterAPIExchange(Config::get('keys'));
+		$json = $twitter->setGetfield($getfield)
+		    ->buildOauth($request_url, $requestMethod)
+		    ->performRequest();
+
+		$data = json_decode($json, true);
+		
+		$client = new Guzzle\Http\Client();
+		$client->setDefaultOption('verify', false);
+
+		foreach($data as $row){
+		
+			$org_text = $row['text'];
+			$urls = \Purl\Url::extract($org_text); 
+
+			if(!empty($urls)){			
+	            $time = date('Y-m-d H:i:s');
+	            
+				$request = $client->get($urls[0]);
+				$history = new Guzzle\Plugin\History\HistoryPlugin();
+				$request->addSubscriber($history);
+				$response = $request->send();
+				$final_url = $response->getEffectiveUrl();
+
+				$url_parts = new \Purl\Url($final_url);
+
+	            $text = str_replace($urls[0], '', $org_text);
+	            
+	           
+	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
+
+	            if(empty($db_item)){
+	                DB::table('news')->insert(array(
+	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'url' => $final_url,
+	                    'category' => 'js',
+	                    'timestamp' => $time,
+	                    'curator' => 'js-live',
+	                    'source' => $url_parts->registerableDomain
+	                ));
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+	            
+	            echo "<li>" .  $text . " - " . $final_url . "</li>";
+			}
+
+		}
+
+	}
+
+
+
+	public function cancelBubble(){
+
+		$request_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+		$getfield = '?screen_name=cancelBubble';
+		$requestMethod = 'GET';
+
+		$twitter = new TwitterAPIExchange(Config::get('keys'));
+		$json = $twitter->setGetfield($getfield)
+		    ->buildOauth($request_url, $requestMethod)
+		    ->performRequest();
+
+		$data = json_decode($json, true);
+		
+		$client = new Guzzle\Http\Client();
+		$client->setDefaultOption('verify', false);
+
+		foreach($data as $row){
+		
+			$org_text = $row['text'];
+			$urls = \Purl\Url::extract($org_text); 
+
+			if(!empty($urls)){			
+	            $time = date('Y-m-d H:i:s');
+	            
+				$request = $client->get($urls[0]);
+				$history = new Guzzle\Plugin\History\HistoryPlugin();
+				$request->addSubscriber($history);
+				$response = $request->send();
+				$final_url = $response->getEffectiveUrl();
+
+				$url_parts = new \Purl\Url($final_url);
+
+	            $text = str_replace($urls[0], '', $org_text);
+	            
+	            
+	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
+
+	            if(empty($db_item)){
+	                DB::table('news')->insert(array(
+	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'url' => $final_url,
+	                    'category' => 'webdev',
+	                    'timestamp' => $time,
+	                    'curator' => 'cancelbubble',
+	                    'source' => $url_parts->registerableDomain
+	                ));
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+
+	            echo "<li>" .  $text . " - " . $final_url . "</li>";
+			}
+
+		}
+
+	}
+
+
+
+	public function redditProgramming(){
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('https://www.reddit.com/r/programming/top/?sort=top&t=week');
+	   
+        $date = date('Y-m-d');
+
+        foreach($html->find('#siteTable a.title') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain)){
+	                
+               		
+	                $time = date('Y-m-d H:i:s');
+	                
+
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'programmer',
+	                        'timestamp' => $time,
+	                        'curator' => 'reddit-programming',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+	                
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+					
+	            }
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
+
+
+	public function redditWebDesign(){
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('https://www.reddit.com/r/web_design/top/?sort=top&t=week');
+	   
+        $date = date('Y-m-d');
+
+        foreach($html->find('#siteTable a.title') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain)){
+	                
+               		
+	                $time = date('Y-m-d H:i:s');
+	                
+
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'design',
+	                        'timestamp' => $time,
+	                        'curator' => 'reddit-webdesign',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+	                
+	                
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+					
+	            }
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
+
+
+	public function redditWebDev(){
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('https://www.reddit.com/r/webdev/top/?sort=top&t=week');
+	   
+        $date = date('Y-m-d');
+
+        foreach($html->find('#siteTable a.title') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain)){
+	                
+               		
+	                $time = date('Y-m-d H:i:s');
+	                
+
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'webdev',
+	                        'timestamp' => $time,
+	                        'curator' => 'reddit-webdev',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+	                
+	                
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+					
+	            }
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
 
 
 	public function updateJSON(){

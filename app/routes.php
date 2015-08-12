@@ -31,6 +31,7 @@ Route::get('/admin/{tag?}', 'AdminController@index');
 Route::post('/admin/disablenewsitem', 'AdminController@disableNewsItem');
 
 
+
 Route::get('/hn/update', 'NewsUpdaterController@hackernews');
 
 Route::get('/echojs/update', 'NewsUpdaterController@echojs');
@@ -112,5 +113,15 @@ Route::get('/webops/update', 'NewsUpdaterController@weboperationsweekly');
 Route::get('/webperformancenews/update', 'NewsUpdaterController@webperformancenews');
 
 Route::get('/longreads-tech/update', 'NewsUpdaterController@longreadsTech');
+
+Route::get('/javascriptlive/update', 'NewsUpdaterController@javascriptlive');
+
+Route::get('/cancelbubble/update', 'NewsUpdaterController@cancelBubble');
+
+Route::get('/reddit-programming/update', 'NewsUpdaterController@redditProgramming');
+
+Route::get('/reddit-webdesign/update', 'NewsUpdaterController@redditWebDesign');
+
+Route::get('/reddit-webdev/update', 'NewsUpdaterController@redditWebDev');
 
 Route::get('/json/update', 'NewsUpdaterController@updateJSON');

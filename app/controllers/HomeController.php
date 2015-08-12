@@ -109,7 +109,8 @@ class HomeController extends BaseController {
 					'JavaScript Weekly' => 'http://javascriptweekly.com/',
 					'Node Weekly' => 'http://nodeweekly.com/',
 					'Ember Weekly' => 'http://emberweekly.com/',
-					'EchoJS' => 'http://www.echojs.com/'
+					'EchoJS' => 'https://twitter.com/echojs',
+					'JavaScript Live' => 'https://twitter.com/JavaScriptDaily'
 				)
 			),
 			'ruby' => array(
@@ -129,13 +130,15 @@ class HomeController extends BaseController {
 			'programmer' => array(
 				'title' => 'Programmer',
 				'sources' => array(
-					'Status Code' => 'http://statuscode.org/'
+					'Status Code' => 'http://statuscode.org/',
+					'Reddit Programming' => 'https://www.reddit.com/r/programming/top/?sort=top&t=week'
 				)
 			),
 			'design' => array(
 				'title' => 'Designers',
 				'sources' => array(
-					'Sidebar' => 'http://sidebar.io/'
+					'Sidebar' => 'http://sidebar.io/',
+					'Reddit Web Design' => 'https://www.reddit.com/r/web_design/top/?sort=top&t=week'
 				)
 			),
 			'gamedev' => array(
@@ -152,7 +155,9 @@ class HomeController extends BaseController {
 					'Web Development Reading List' => 'https://wdrl.info/',
 					'Web Design Weekly' => 'https://web-design-weekly.com/',
 					'Mobile Web Weekly' => 'http://mobilewebweekly.co/',
-					'Hey Designer' => 'http://heydesigner.com/'
+					'Hey Designer' => 'http://heydesigner.com/',
+					'Reddit Webdev' => 'https://www.reddit.com/r/webdev/top/?sort=top&t=week',
+					'CancelBubble' => 'https://twitter.com/cancelBubble'
 				)
 			),
 			'web-operations' => array(
