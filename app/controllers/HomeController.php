@@ -134,10 +134,12 @@ class HomeController extends BaseController {
 					'Reddit Programming' => 'https://www.reddit.com/r/programming/top/?sort=top&t=week'
 				)
 			),
-			'design' => array(
+			'webdesign' => array(
 				'title' => 'Designers',
 				'sources' => array(
 					'Sidebar' => 'http://sidebar.io/',
+					'Web Design Weekly' => 'https://web-design-weekly.com/',
+					'Hey Designer' => 'http://heydesigner.com/',
 					'Reddit Web Design' => 'https://www.reddit.com/r/web_design/top/?sort=top&t=week'
 				)
 			),
@@ -153,11 +155,14 @@ class HomeController extends BaseController {
 					'Breaking Development' => 'http://bdconf.com/',
 					'Versioning' => 'http://www.sitepoint.com/versioning/',
 					'Web Development Reading List' => 'https://wdrl.info/',
-					'Web Design Weekly' => 'https://web-design-weekly.com/',
-					'Mobile Web Weekly' => 'http://mobilewebweekly.co/',
-					'Hey Designer' => 'http://heydesigner.com/',
 					'Reddit Webdev' => 'https://www.reddit.com/r/webdev/top/?sort=top&t=week',
 					'CancelBubble' => 'https://twitter.com/cancelBubble'
+				)
+			),
+			'mobile' => array(
+				'title' => 'Mobile',
+				'sources' => array(
+					'Mobile Web Weekly' => 'http://mobilewebweekly.co/',
 				)
 			),
 			'web-operations' => array(

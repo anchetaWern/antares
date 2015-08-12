@@ -1062,7 +1062,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'webdev',
+	                    'category' => 'webdesign',
 	                    'timestamp' => $time,
 	                    'curator' => 'wdweekly',
 	                    'source' => $url_parts->registerableDomain
@@ -1132,7 +1132,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'webdev',
+	                    'category' => 'mobile',
 	                    'timestamp' => $time,
 	                    'curator' => 'mobilewebweekly',
 	                    'source' => $url_parts->registerableDomain
@@ -1178,7 +1178,7 @@ class NewsUpdaterController extends BaseController {
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
 	                    'url' => $url,
-	                    'category' => 'webdev',
+	                    'category' => 'webdesign',
 	                    'timestamp' => $time,
 	                    'curator' => 'heydesigner',
 	                    'source' => $url_parts->registerableDomain
@@ -1802,7 +1802,7 @@ class NewsUpdaterController extends BaseController {
 		                DB::table('news')->insert(array(
 		                    'title' => html_entity_decode($text, ENT_QUOTES),
 		                    'url' => $url,
-		                    'category' => 'design',
+		                    'category' => 'webdesign',
 		                    'timestamp' => $datetime,
 		                    'curator' => 'sidebario',
 		                    'source' => $url_parts->registerableDomain
@@ -2631,7 +2631,7 @@ class NewsUpdaterController extends BaseController {
 	                    DB::table('news')->insert(array(
 	                        'title' => html_entity_decode($text, ENT_QUOTES),
 	                        'url' => $url,
-	                        'category' => 'design',
+	                        'category' => 'webdesign',
 	                        'timestamp' => $time,
 	                        'curator' => 'reddit-webdesign',
 	                        'source' => $url_parts->registerableDomain
@@ -2724,10 +2724,11 @@ class NewsUpdaterController extends BaseController {
 			'ruby',
 			'db',
 			'programmer',
-			'design',
+			'webdesign',
 			'webdev',
 			'web-performance',
 			'web-operations',
+			'mobile',
 			'tools',
 			'python',
 			'ios',
