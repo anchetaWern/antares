@@ -135,12 +135,19 @@ class HomeController extends BaseController {
 				)
 			),
 			'webdesign' => array(
-				'title' => 'Designers',
+				'title' => 'Web Design',
 				'sources' => array(
 					'Sidebar' => 'http://sidebar.io/',
 					'Web Design Weekly' => 'https://web-design-weekly.com/',
 					'Hey Designer' => 'http://heydesigner.com/',
 					'Reddit Web Design' => 'https://www.reddit.com/r/web_design/top/?sort=top&t=week'
+				)
+			),
+			'uxdesign' => array(
+				'title' => 'UX Design',
+				'sources' => array(
+					'UX Design Weekly' => 'http://uxdesignweekly.com/',
+					'UX Weekly' => 'http://uxwkly.com/'
 				)
 			),
 			'gamedev' => array(
@@ -236,6 +243,12 @@ class HomeController extends BaseController {
 				'title' => 'Non-developer',
 				'sources' => array(
 					'Next Draft' => 'http://nextdraft.com/'
+				)
+			),
+			'pockethits' => array(
+				'title' => 'Pocket Hits',
+				'sources' => array(
+					'Next Draft' => 'https://twitter.com/PocketHits'
 				)
 			)
 		);

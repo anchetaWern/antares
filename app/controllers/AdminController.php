@@ -86,7 +86,7 @@ class AdminController extends BaseController {
 			'dn' => array(
 				'title' => 'Designer News',
 				'sources' => array(
-					'Medium' => 'https://news.layervault.com/'
+					'Designer News' => 'https://news.layervault.com/'
 				)
 			),
 			'readability' => array(
@@ -126,7 +126,8 @@ class AdminController extends BaseController {
 					'JavaScript Weekly' => 'http://javascriptweekly.com/',
 					'Node Weekly' => 'http://nodeweekly.com/',
 					'Ember Weekly' => 'http://emberweekly.com/',
-					'EchoJS' => 'http://www.echojs.com/'
+					'EchoJS' => 'https://twitter.com/echojs',
+					'JavaScript Live' => 'https://twitter.com/JavaScriptDaily'
 				)
 			),
 			'ruby' => array(
@@ -146,13 +147,24 @@ class AdminController extends BaseController {
 			'programmer' => array(
 				'title' => 'Programmer',
 				'sources' => array(
-					'Status Code' => 'http://statuscode.org/'
+					'Status Code' => 'http://statuscode.org/',
+					'Reddit Programming' => 'https://www.reddit.com/r/programming/top/?sort=top&t=week'
 				)
 			),
-			'design' => array(
-				'title' => 'Designers',
+			'webdesign' => array(
+				'title' => 'Web Design',
 				'sources' => array(
-					'Sidebar' => 'http://sidebar.io/'
+					'Sidebar' => 'http://sidebar.io/',
+					'Web Design Weekly' => 'https://web-design-weekly.com/',
+					'Hey Designer' => 'http://heydesigner.com/',
+					'Reddit Web Design' => 'https://www.reddit.com/r/web_design/top/?sort=top&t=week'
+				)
+			),
+			'uxdesign' => array(
+				'title' => 'UX Design',
+				'sources' => array(
+					'UX Design Weekly' => 'http://uxdesignweekly.com/',
+					'UX Weekly' => 'http://uxwkly.com/'
 				)
 			),
 			'gamedev' => array(
@@ -167,9 +179,14 @@ class AdminController extends BaseController {
 					'Breaking Development' => 'http://bdconf.com/',
 					'Versioning' => 'http://www.sitepoint.com/versioning/',
 					'Web Development Reading List' => 'https://wdrl.info/',
-					'Web Design Weekly' => 'https://web-design-weekly.com/',
+					'Reddit Webdev' => 'https://www.reddit.com/r/webdev/top/?sort=top&t=week',
+					'CancelBubble' => 'https://twitter.com/cancelBubble'
+				)
+			),
+			'mobile' => array(
+				'title' => 'Mobile',
+				'sources' => array(
 					'Mobile Web Weekly' => 'http://mobilewebweekly.co/',
-					'Hey Designer' => 'http://heydesigner.com/'
 				)
 			),
 			'web-operations' => array(
@@ -233,14 +250,25 @@ class AdminController extends BaseController {
 					'wpMail' => 'http://wpmail.me/'
 				)
 			),
+			'longreads-tech' => array(
+				'title' => 'Longreads',
+				'sources' => array(
+					'Longreads Tech' => 'http://longreads.com/articles/search/?q=Tech'
+				)
+			),			
 			'nondev' => array(
 				'title' => 'Non-developer',
 				'sources' => array(
 					'Next Draft' => 'http://nextdraft.com/'
 				)
+			),
+			'pockethits' => array(
+				'title' => 'Pocket Hits',
+				'sources' => array(
+					'Next Draft' => 'https://twitter.com/PocketHits'
+				)
 			)
 		);
-
 		$page_data = array(
 			'category' => $category,
 			'news_sources' => $news_sources,

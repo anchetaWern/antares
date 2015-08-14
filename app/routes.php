@@ -124,4 +124,10 @@ Route::get('/reddit-webdesign/update', 'NewsUpdaterController@redditWebDesign');
 
 Route::get('/reddit-webdev/update', 'NewsUpdaterController@redditWebDev');
 
+Route::get('/pocket/update', 'NewsUpdaterController@updatePocket');
+
+Route::get('/uxdesignweekly/update', 'NewsUpdaterController@updateUXDesignWeekly');
+
+Route::get('/uxweekly/update', 'NewsUpdaterController@updateUXWeekly');
+
 Route::get('/json/update', 'NewsUpdaterController@updateJSON');

@@ -2707,6 +2707,170 @@ class NewsUpdaterController extends BaseController {
 
 
 
+	public function updatePocket(){
+
+
+		$request_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+		$getfield = '?screen_name=PocketHits&exclude_replies=true&include_rts=false';
+		$requestMethod = 'GET';
+
+		$twitter = new TwitterAPIExchange(Config::get('keys'));
+		$json = $twitter->setGetfield($getfield)
+		    ->buildOauth($request_url, $requestMethod)
+		    ->performRequest();
+
+		$data = json_decode($json, true);
+		
+		$client = new Guzzle\Http\Client();
+		$client->setDefaultOption('verify', false);
+
+		foreach($data as $row){
+		
+			$org_text = $row['text'];
+			$url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['expanded_url'] : '';
+			$twitter_url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['url'] : '';
+
+			if(!empty($url)){			
+	            $time = date('Y-m-d H:i:s');
+	          
+				$url_parts = new \Purl\Url($url);
+
+	            $text = str_replace($twitter_url, '', $org_text);
+	            
+	            $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	            if(empty($db_item)){
+	                DB::table('news')->insert(array(
+	                    'title' => html_entity_decode($text, ENT_QUOTES),
+	                    'url' => $url,
+	                    'category' => 'pockethits',
+	                    'timestamp' => $time,
+	                    'curator' => 'pockethits',
+	                    'source' => $url_parts->registerableDomain
+	                ));
+	            }else{
+	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	            }
+	            
+
+	            echo "<li>" .  $text . '->' . $url . "</li>";
+			}
+
+		}
+
+	}
+
+
+
+
+	public function updateUXDesignWeekly(){
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('http://uxdesignweekly.com/archived-issues/');
+	   
+        $date = date('Y-m-d');
+
+        $latest_link = $html->find('.post-entry a', 0)->href;
+
+        $html->load_file($latest_link);
+
+        foreach($html->find('.post-entry a') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain) && strpos($url, 'http://uxdesignweekly.com') === false){
+	                
+               		
+	                $time = date('Y-m-d H:i:s');
+	                
+	                
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'ux',
+	                        'timestamp' => $time,
+	                        'curator' => 'uxdesignweekly',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+
+	               	
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+					
+	            }
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
+
+	public function updateUXWeekly(){
+
+	    $html = new simple_html_dom();
+
+	    $html->load_file('https://pinboard.in/u:simonv3/t:uxweekly-sent/#');
+	   
+        $date = date('Y-m-d');
+
+        foreach($html->find('a.bookmark_title') as $link){
+
+            $url = $link->href;
+            $url_parts = new \Purl\Url($url);
+
+            if(!empty($url_parts->registerableDomain)){
+
+
+	            $text = trim($link->plaintext);
+	            
+	            if(!empty($url) && !empty($text) && !empty($url_parts->registerableDomain)){
+	                
+               		
+	                $time = date('Y-m-d H:i:s');
+	                
+	                
+	                $db_item = DB::table('news')->where('url', '=', $url)->first();
+
+	                if(empty($db_item)){
+	                    DB::table('news')->insert(array(
+	                        'title' => html_entity_decode($text, ENT_QUOTES),
+	                        'url' => $url,
+	                        'category' => 'ux',
+	                        'timestamp' => $time,
+	                        'curator' => 'uxweekly',
+	                        'source' => $url_parts->registerableDomain
+	                    ));
+	                }else{
+	                    DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+	                }
+	               	
+	                echo "<li>" .  $text . " - " . $url . "</li>";
+					
+	            }
+            }
+        }
+	  
+
+	    return 'success';
+
+	}
+
+
+
 	public function updateJSON(){
 
 		$categories = array(
@@ -2725,6 +2889,7 @@ class NewsUpdaterController extends BaseController {
 			'db',
 			'programmer',
 			'webdesign',
+			'uxdesign',
 			'webdev',
 			'web-performance',
 			'web-operations',
@@ -2738,7 +2903,8 @@ class NewsUpdaterController extends BaseController {
 			'devops',
 			'nondev',
 			'go',
-			'longreads-tech'
+			'longreads-tech',
+			'pockethits'
 		);
 
 
