@@ -2797,7 +2797,7 @@ class NewsUpdaterController extends BaseController {
 	                    DB::table('news')->insert(array(
 	                        'title' => html_entity_decode($text, ENT_QUOTES),
 	                        'url' => $url,
-	                        'category' => 'ux',
+	                        'category' => 'uxdesign',
 	                        'timestamp' => $time,
 	                        'curator' => 'uxdesignweekly',
 	                        'source' => $url_parts->registerableDomain
@@ -2849,7 +2849,7 @@ class NewsUpdaterController extends BaseController {
 	                    DB::table('news')->insert(array(
 	                        'title' => html_entity_decode($text, ENT_QUOTES),
 	                        'url' => $url,
-	                        'category' => 'ux',
+	                        'category' => 'uxdesign',
 	                        'timestamp' => $time,
 	                        'curator' => 'uxweekly',
 	                        'source' => $url_parts->registerableDomain
