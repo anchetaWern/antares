@@ -132,6 +132,12 @@ a.item-link:visited {
     margin-right: 0;
 }
 
+#app {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+}
+
 @media screen and (max-width: 375px){
    
     h2 {
@@ -184,6 +190,16 @@ a.item-link:visited {
     .actions {
         display: none;
     }
+
+
+    #app {
+        position: relative;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+        margin: 10px 0;
+    }
+
 
 }
 

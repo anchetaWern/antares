@@ -34,6 +34,13 @@
 <body>
 	<div id="wrapper">
 	@yield('content')
+
+	<div id="app">
+		<a href="https://play.google.com/store/apps/details?id=com.wern.antares" target="_blank">
+	  		<img src="{{ asset('assets/img/googleplay.png') }}" alt="get the app on google play">
+		</a>
+	</div>
+
 	</div>
 	<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 	<script src="{{ asset('assets/js/jquery.infinitescroll.js') }}"></script>
