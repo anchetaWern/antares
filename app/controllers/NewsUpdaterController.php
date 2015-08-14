@@ -2884,6 +2884,7 @@ class NewsUpdaterController extends BaseController {
 			'php',
 			'html5',
 			'css',
+			'gamedev',
 			'js',
 			'ruby',
 			'db',
