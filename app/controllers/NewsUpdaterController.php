@@ -2386,8 +2386,8 @@ class NewsUpdaterController extends BaseController {
 	            $time = date('Y-m-d H:i:s');
 	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
 	            
-	            $url = $item['guid'];
-				$url_parts = parse_url($url);
+	            $original_url = $item['guid'];
+				$url_parts = parse_url($original_url);
 				
 				if(!empty($url_parts['host']) && !empty($url_parts['path'])){				
 					$url = $url_parts['host'] . $url_parts['path'];
@@ -2397,14 +2397,14 @@ class NewsUpdaterController extends BaseController {
 		            if(empty($db_item)){
 		                DB::table('news')->insert(array(
 		                    'title' => $text,
-		                    'url' => $url,
+		                    'url' => $original_url,
 		                    'category' => 'js',
 		                    'timestamp' => $time,
 		                    'curator' => 'echojs',
 		                    'source' => $url_parts['host']
 		                ));
 		            }else{
-		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time, 'url' => $original_url));
 		            }
 		            
 		            echo "<li>" .  $text . " - " . $url . "</li>";
