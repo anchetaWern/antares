@@ -3,18 +3,20 @@ class NewsUpdaterController extends BaseController {
 
 	public function hackernews(){
 
-	    $client = new Guzzle\Http\Client();
+	    $client = new GuzzleHttp\Client();
 
 	    $top_stories = array();
 
 	    $date = date('Y-m-d');
 
 	    $topstories_res = $client->get('https://hacker-news.firebaseio.com/v0/topstories.json');
-	    $topstories_ids = $topstories_res->json();
+	    
+	    $topstories_ids = json_decode($topstories_res->getBody(), true);
 
+	    
 	    foreach($topstories_ids as $id){
 	        $item_res = $client->get("https://hacker-news.firebaseio.com/v0/item/" . $id . ".json");
-	        $item_data = $item_res->json();
+	        $item_data = json_decode($item_res->getBody(), true);
 
 	        $text = html_entity_decode($item_data['title'], ENT_QUOTES);
 
@@ -47,10 +49,9 @@ class NewsUpdaterController extends BaseController {
 			        echo "<li>" . $text . " - " . $url . "</li>";
 				}
 	        }
-	        
-
 
 	    }
+	    
 
 	    return 'success';
 
@@ -2262,7 +2263,7 @@ class NewsUpdaterController extends BaseController {
 
 		//every saturday
 
-	    $client = new Guzzle\Http\Client();
+	    $client = new GuzzleHttp\Client();
 	    $response = $client->get('http://www.webperformancenews.com/feed.xml');
 
 	    $date = date('Y-m-d');
@@ -2372,61 +2373,48 @@ class NewsUpdaterController extends BaseController {
 
 	public function echojs(){
 
-		$request_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
-		$getfield = '?screen_name=echojs';
-		$requestMethod = 'GET';
-
-		$twitter = new TwitterAPIExchange(Config::get('keys'));
-		$json = $twitter->setGetfield($getfield)
-		    ->buildOauth($request_url, $requestMethod)
-		    ->performRequest();
-
+	    $client = new GuzzleHttp\Client();
+	    $response = $client->get('http://www.echojs.com/rss');
+	    $date = date('Y-m-d');
+	   	$xml = simplexml_load_string($response->getBody(), "SimpleXMLElement", LIBXML_NOCDATA);
+		$json = json_encode($xml);
 		$data = json_decode($json, true);
-		
-		$client = new Guzzle\Http\Client();
-		$client->setDefaultOption('verify', false);
 
-		foreach($data as $row){
 		
-			$org_text = $row['text'];
-			$urls = \Purl\Url::extract($org_text); 
-
-			if(!empty($urls)){			
+	    if(!empty($data['channel'])){
+	        foreach($data['channel']['item'] as $item){
 	            $time = date('Y-m-d H:i:s');
+	            $text = html_entity_decode(trim($item['title']), ENT_QUOTES);
 	            
-				$request = $client->get($urls[0]);
-				$history = new Guzzle\Plugin\History\HistoryPlugin();
-				$request->addSubscriber($history);
-				$response = $request->send();
-				$final_url = $response->getEffectiveUrl();
-
-				$url_parts = new \Purl\Url($final_url);
-
-	            $text = str_replace($urls[0], '', $org_text);
-	            
-	            
-	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
-
-	            if(empty($db_item)){
-	                DB::table('news')->insert(array(
-	                    'title' => html_entity_decode($text, ENT_QUOTES),
-	                    'url' => $final_url,
-	                    'category' => 'js',
-	                    'timestamp' => $time,
-	                    'curator' => 'echojs',
-	                    'source' => $url_parts->registerableDomain
-	                ));
-	            }else{
-	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	            }
-	            
-	            
-	            echo "<li>" .  $text . " - " . $final_url . "</li>";
-			}
-
-		}
-
+	            $url = $item['guid'];
+				$url_parts = parse_url($url);
+				
+				if(!empty($url_parts['host']) && !empty($url_parts['path'])){				
+					$url = $url_parts['host'] . $url_parts['path'];
+		            $db_item = DB::table('news')
+		                ->where('url', '=', $url)
+		                ->first();
+		            if(empty($db_item)){
+		                DB::table('news')->insert(array(
+		                    'title' => $text,
+		                    'url' => $url,
+		                    'category' => 'js',
+		                    'timestamp' => $time,
+		                    'curator' => 'echojs',
+		                    'source' => $url_parts['host']
+		                ));
+		            }else{
+		                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		            }
+		            
+		            echo "<li>" .  $text . " - " . $url . "</li>";
+				}
+	        }
+	    }
+	    
+	    return 'success';
 	}
+
 
 
 	public function javascriptlive(){
@@ -2442,48 +2430,42 @@ class NewsUpdaterController extends BaseController {
 
 		$data = json_decode($json, true);
 		
-		$client = new Guzzle\Http\Client();
-		$client->setDefaultOption('verify', false);
-
-		foreach($data as $row){
 		
+		foreach($data as $row){
+
 			$org_text = $row['text'];
-			$urls = \Purl\Url::extract($org_text); 
+			$url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['expanded_url'] : '';
+			$twitter_url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['url'] : '';
 
-			if(!empty($urls)){			
-	            $time = date('Y-m-d H:i:s');
-	            
-				$request = $client->get($urls[0]);
-				$history = new Guzzle\Plugin\History\HistoryPlugin();
-				$request->addSubscriber($history);
-				$response = $request->send();
-				$final_url = $response->getEffectiveUrl();
+			if(!empty($url)){
+			
+		        $time = date('Y-m-d H:i:s');
+		      
+				$url_parts = new \Purl\Url($url);
 
-				$url_parts = new \Purl\Url($final_url);
+		        $text = str_replace($twitter_url, '', $org_text);
+		        
+		        $db_item = DB::table('news')->where('url', '=', $url)->first();
 
-	            $text = str_replace($urls[0], '', $org_text);
-	            
-	           
-	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
+		        if(empty($db_item)){
+		            DB::table('news')->insert(array(
+		                'title' => html_entity_decode($text, ENT_QUOTES),
+		                'url' => $url,
+		                'category' => 'js',
+		                'timestamp' => $time,
+		                'curator' => 'js-live',
+		                'source' => $url_parts->registerableDomain
+		            ));
+		        }else{
+		            DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
+		        }
+		        
 
-	            if(empty($db_item)){
-	                DB::table('news')->insert(array(
-	                    'title' => html_entity_decode($text, ENT_QUOTES),
-	                    'url' => $final_url,
-	                    'category' => 'js',
-	                    'timestamp' => $time,
-	                    'curator' => 'js-live',
-	                    'source' => $url_parts->registerableDomain
-	                ));
-	            }else{
-	                DB::table('news')->where('id', $db_item->id)->update(array('timestamp' => $time));
-	            }
-	            
-	            
-	            echo "<li>" .  $text . " - " . $final_url . "</li>";
+		        echo "<li>" .  $text . '->' . $url . "</li>";
 			}
 
 		}
+
 
 	}
 
@@ -2502,34 +2484,27 @@ class NewsUpdaterController extends BaseController {
 
 		$data = json_decode($json, true);
 		
-		$client = new Guzzle\Http\Client();
-		$client->setDefaultOption('verify', false);
-
+		
 		foreach($data as $row){
 		
 			$org_text = $row['text'];
-			$urls = \Purl\Url::extract($org_text); 
+			$url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['expanded_url'] : '';
+			$twitter_url = (!empty($row['entities']['urls'])) ? $row['entities']['urls'][0]['url'] : '';
 
-			if(!empty($urls)){			
+			if(!empty($url)){
+			
 	            $time = date('Y-m-d H:i:s');
-	            
-				$request = $client->get($urls[0]);
-				$history = new Guzzle\Plugin\History\HistoryPlugin();
-				$request->addSubscriber($history);
-				$response = $request->send();
-				$final_url = $response->getEffectiveUrl();
+	          
+				$url_parts = new \Purl\Url($url);
 
-				$url_parts = new \Purl\Url($final_url);
-
-	            $text = str_replace($urls[0], '', $org_text);
+	            $text = str_replace($twitter_url, '', $org_text);
 	            
-	            
-	            $db_item = DB::table('news')->where('url', '=', $final_url)->first();
+	            $db_item = DB::table('news')->where('url', '=', $url)->first();
 
 	            if(empty($db_item)){
 	                DB::table('news')->insert(array(
 	                    'title' => html_entity_decode($text, ENT_QUOTES),
-	                    'url' => $final_url,
+	                    'url' => $url,
 	                    'category' => 'webdev',
 	                    'timestamp' => $time,
 	                    'curator' => 'cancelbubble',
@@ -2540,7 +2515,7 @@ class NewsUpdaterController extends BaseController {
 	            }
 	            
 
-	            echo "<li>" .  $text . " - " . $final_url . "</li>";
+	            echo "<li>" .  $text . '->' . $url . "</li>";
 			}
 
 		}
@@ -2720,9 +2695,6 @@ class NewsUpdaterController extends BaseController {
 		    ->performRequest();
 
 		$data = json_decode($json, true);
-		
-		$client = new Guzzle\Http\Client();
-		$client->setDefaultOption('verify', false);
 
 		foreach($data as $row){
 		
