@@ -35,7 +35,7 @@
 		<li class="item">
 			<div class="date {{ ToggleHelper::showWhenCurrentDateIsNotEqualtoPrevious($key, $news) }}">{{ Carbon::createFromFormat('Y-m-d H:i:s', $item->timestamp)->format('M d') }}</div>
 			<input type="checkbox" class="disble-item" data-id="{{ $item->id }}">
-			<a href="http://{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
+			<a href="{{ $item->url }}" class="item-link" target="_blank">{{ $item->title }}</a>
 			<div>
 				<a href="http://{{ $item->source }}" class="source">{{ $item->source }}</a>
 			</div>
